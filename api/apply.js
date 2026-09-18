@@ -3,12 +3,12 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 function getDatabase() {
   if (!getApps().length) {
+    const serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT
+    );
+
     initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
-      })
+      credential: cert(serviceAccount)
     });
   }
 
@@ -16,7 +16,6 @@ function getDatabase() {
 }
 
 export default async function handler(req, res) {
-  // POST only
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed."
@@ -29,24 +28,20 @@ export default async function handler(req, res) {
     const borrowerName = String(name || "").trim();
     const loanAmount = Number(amount);
 
-    // Validate name
     if (!borrowerName) {
       return res.status(400).json({
         error: "Name is required."
       });
     }
 
-    // Validate amount
     if (!Number.isFinite(loanAmount) || loanAmount <= 0) {
       return res.status(400).json({
         error: "Amount must be greater than 0."
       });
     }
 
-    // Automatic Date
     const today = new Date();
 
-    // Automatic Due Date = Date + 15 days
     const dueDate = new Date(today);
     dueDate.setDate(dueDate.getDate() + 15);
 
@@ -64,7 +59,6 @@ export default async function handler(req, res) {
       "-" +
       String(dueDate.getDate()).padStart(2, "0");
 
-    // Firebase Firestore
     const db = getDatabase();
 
     const application = await db
