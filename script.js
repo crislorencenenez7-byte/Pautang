@@ -2,7 +2,7 @@ const form = document.getElementById("loanForm");
 const message = document.getElementById("message");
 
 // ILAGAY DITO ANG WEB APP URL MO
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwHs0s9C-vgLEskjs1JPIuSE8nKsYdI7nc98jdzSO4m0LE6qlXwTjsU4OIZkB-wqsPo/exec";
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
