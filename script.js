@@ -1,49 +1,49 @@
-const form = document.getElementById("loanForm");
-const message = document.getElementById("message");
+const CFG = window.PAUTANG_CONFIG || {};
+const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "";
 
-// ILAGAY DITO ANG WEB APP URL MO
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwHs0s9C-vgLEskjs1JPIuSE8nKsYdI7nc98jdzSO4m0LE6qlXwTjsU4OIZkB-wqsPo/exec";
+function setupMobileNav(){
+  const nav=document.querySelector('.main-nav');
+  const bar=document.querySelector('.topbar');
+  if(!nav||!bar||bar.querySelector('.mobile-nav-toggle')) return;
+  const btn=bar.querySelector('.mobile-nav-toggle');
+  btn.addEventListener('click',()=>{const open=nav.classList.toggle('open');bar.classList.toggle('nav-open',open);btn.textContent=open?'✕':'☰';btn.setAttribute('aria-expanded',String(open));});
+}
+setupMobileNav();
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+const amountEl=document.getElementById('amount');
+const totalPreview=document.getElementById('totalPreview');
+if(amountEl&&totalPreview){
+  const update=()=>{const a=Number(amountEl.value)||0;totalPreview.textContent='₱'+(a*1.2).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});};
+  amountEl.addEventListener('input',update); update();
+}
 
-  const button = form.querySelector("button");
-  button.disabled = true;
-  message.hidden = true;
-  message.className = "message";
+function setupMethodRadios(name,a,b){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r=>r.addEventListener('change',()=>{
+    const is=r.checked&&r.value==='GCash';
+    const one=document.getElementById(a), two=document.getElementById(b);
+    if(one) one.hidden=!is; if(two) two.hidden=is;
+  }));
+}
+setupMethodRadios('releaseMethod','releaseGcash','releaseHandsOn');
+setupMethodRadios('paymentMethod','paymentGcash','paymentHandsOn');
 
-  const data = {
-    name: document.getElementById("name").value.trim(),
-    amount: Number(document.getElementById("amount").value)
-  };
+const loanForm=document.getElementById('loanForm');
+if(loanForm){
+  loanForm.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const msg=document.getElementById('message'); const btn=loanForm.querySelector('button[type="submit"]');
+    if(!GOOGLE_SHEET_URL){msg.textContent='Google Sheets Web App URL is not configured.';msg.className='message error';msg.hidden=false;return;}
+    btn.disabled=true; msg.hidden=true; msg.className='message';
+    const data={name:document.getElementById('name').value.trim(),amount:Number(document.getElementById('amount').value),releaseMethod:document.querySelector('input[name="releaseMethod"]:checked')?.value||'GCash',releaseGcashName:document.getElementById('releaseGcashName')?.value.trim()||'',releaseGcashNumber:document.getElementById('releaseGcashNumber')?.value.trim()||''};
+    try{const res=await fetch(GOOGLE_SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});const out=await res.json();if(!out.success)throw new Error(out.message||'Application failed.');msg.textContent='Application recorded successfully. Due Date: 15 days from today. Status: Unpaid';msg.hidden=false;loanForm.reset();if(totalPreview)totalPreview.textContent='₱0.00';}
+    catch(err){msg.textContent=err.message||'Unable to submit.';msg.className='message error';msg.hidden=false;}
+    finally{btn.disabled=false;}
+  });
+}
 
-  try {
-    const response = await fetch(GOOGLE_SHEET_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.message || "Application failed.");
-    }
-
-    message.textContent =
-      "Application recorded successfully. Due Date is 15 days from today. Status: Unpaid";
-
-    message.hidden = false;
-    form.reset();
-
-  } catch (error) {
-    message.textContent = error.message;
-    message.className = "message error";
-    message.hidden = false;
-
-  } finally {
-    button.disabled = false;
-  }
-});
+const payForm=document.getElementById('paymentForm');
+if(payForm){
+  const info=document.getElementById('gcashInfo');
+  if(info&&CFG.GCASH_NAME&&CFG.GCASH_NUMBER) info.textContent=`${CFG.GCASH_NAME} • ${CFG.GCASH_NUMBER}`;
+  payForm.addEventListener('submit',e=>{e.preventDefault();const m=document.getElementById('paymentMessage');m.textContent='Payment submitted for admin verification. The status should become Paid only after the admin verifies the payment.';m.hidden=false;});
+}
