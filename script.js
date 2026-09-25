@@ -1,5 +1,5 @@
 const CFG = window.PAUTANG_CONFIG || {};
-const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "";
+const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
 
 const amountEl = document.getElementById("amount");
 const totalPreview = document.getElementById("totalPreview");
