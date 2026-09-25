@@ -13,9 +13,13 @@
 <label class="method-card"><input type="radio" name="releaseMethod" value="Hands-On"><b>Hands-On</b><small>Receive in person</small></label></div></fieldset>
 <div id="releaseGcash"><label>GCash account name<input id="releaseGcashName" placeholder="Registered name"></label>
 <label>GCash number<input id="releaseGcashNumber" inputmode="tel" placeholder="09XXXXXXXXX"></label></div>
-<div id="releaseHandsOn" hidden><div class="notice">Admin will provide the Hands-On release instructions.</div></div>
+<div id="releaseHandsOn" hidden>
+<label>Address<input id="releaseHandsOnAddress" autocomplete="street-address" placeholder="Complete address"></label>
+<div class="notice">For Hands-On release, your borrower name and address will be recorded for the in-person arrangement.</div>
+</div>
 <button class="primary-btn" type="submit">Submit Application →</button><div id="message" class="message" hidden></div>
 </form></section><footer>© <span id="year"></span> PautangMo</footer></main>
+<script src="config.js"></script>
 <script src="script.js"></script>
 <script>
 (function(){
