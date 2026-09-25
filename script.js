@@ -1,5 +1,5 @@
 const CFG = window.PAUTANG_CONFIG || {};
-const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "";
+const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "https://script.google.com/macros/library/d/1E05aspSm1hJ-9HEKg3G_EdcoawGDCisCUCAShJmR7pk23MG768HTRxE_/exec";
 
 function setupMobileNav(){
   const nav=document.querySelector('.main-nav');
