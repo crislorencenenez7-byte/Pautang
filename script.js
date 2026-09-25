@@ -1,6 +1,9 @@
 const form = document.getElementById("loanForm");
 const message = document.getElementById("message");
 
+// ILAGAY DITO ANG WEB APP URL MO
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -15,24 +18,31 @@ form.addEventListener("submit", async (event) => {
   };
 
   try {
-    const response = await fetch("/api/apply", {
+    const response = await fetch(GOOGLE_SHEET_URL, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
       body: JSON.stringify(data)
     });
 
     const result = await response.json();
 
-    if (!response.ok) throw new Error(result.error || "Application failed.");
+    if (!result.success) {
+      throw new Error(result.message || "Application failed.");
+    }
 
     message.textContent =
-      `Application recorded. Due Date: ${result.due_date}. Status: Unpaid`;
+      "Application recorded successfully. Due Date is 15 days from today. Status: Unpaid";
+
     message.hidden = false;
     form.reset();
+
   } catch (error) {
     message.textContent = error.message;
     message.className = "message error";
     message.hidden = false;
+
   } finally {
     button.disabled = false;
   }
