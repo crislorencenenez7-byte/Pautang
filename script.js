@@ -1,142 +1,415 @@
-const CFG = window.PAUTANG_CONFIG || {};
-const GOOGLE_SHEET_URL = CFG.GOOGLE_SHEET_URL || "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
+// ==========================================
+// PAUTANGMO - MAIN SCRIPT
+// Google Sheets / Apps Script
+// ==========================================
 
-const amountEl = document.getElementById("amount");
-const totalPreview = document.getElementById("totalPreview");
+const GOOGLE_SHEET_URL =
+  "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
 
-if (amountEl && totalPreview) {
-  const update = () => {
-    const a = Number(amountEl.value) || 0;
-    totalPreview.textContent = "₱" + a.toLocaleString("en-PH", {
+
+// ==========================================
+// HELPER
+// ==========================================
+
+function showMessage(element, text, error = false) {
+  if (!element) return;
+
+  element.textContent = text;
+  element.hidden = false;
+  element.className = error
+    ? "message error"
+    : "message";
+}
+
+
+// ==========================================
+// LOAN TOTAL PREVIEW
+// 20% INTEREST
+// ==========================================
+
+const amountInput =
+  document.getElementById("amount");
+
+const totalPreview =
+  document.getElementById("totalPreview");
+
+function updateLoanTotal() {
+  if (!amountInput || !totalPreview) return;
+
+  const amount =
+    Number(amountInput.value) || 0;
+
+  const total =
+    amount * 1.20;
+
+  totalPreview.textContent =
+    "₱" +
+    amount.toLocaleString("en-PH", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }) + " × 1.20 = ₱" + (a * 1.2).toLocaleString("en-PH", {
+    }) +
+    " × 1.20 = ₱" +
+    total.toLocaleString("en-PH", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
-  };
-  amountEl.addEventListener("input", update);
+}
+
+if (amountInput) {
+  amountInput.addEventListener(
+    "input",
+    updateLoanTotal
+  );
+
+  updateLoanTotal();
+}
+
+
+// ==========================================
+// GCash / HANDS-ON SWITCH
+// ==========================================
+
+function setupMethod(
+  radioName,
+  gcashContainerId,
+  handsOnContainerId
+) {
+  const radios =
+    document.querySelectorAll(
+      `input[name="${radioName}"]`
+    );
+
+  if (!radios.length) return;
+
+  function update() {
+    const selected =
+      document.querySelector(
+        `input[name="${radioName}"]:checked`
+      );
+
+    const gcash =
+      document.getElementById(
+        gcashContainerId
+      );
+
+    const handsOn =
+      document.getElementById(
+        handsOnContainerId
+      );
+
+    if (!selected) return;
+
+    const isGCash =
+      selected.value === "GCash";
+
+    if (gcash) {
+      gcash.hidden = !isGCash;
+    }
+
+    if (handsOn) {
+      handsOn.hidden = isGCash;
+    }
+  }
+
+  radios.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      update
+    );
+  });
+
   update();
 }
 
-function setupMethodRadios(name, gcashId, handsOnId) {
-  document.querySelectorAll(`input[name="${name}"]`).forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const isGCash = radio.checked && radio.value === "GCash";
-      const gcash = document.getElementById(gcashId);
-      const handsOn = document.getElementById(handsOnId);
-      if (gcash) gcash.hidden = !isGCash;
-      if (handsOn) handsOn.hidden = isGCash;
-    });
-  });
-}
+setupMethod(
+  "releaseMethod",
+  "releaseGcash",
+  "releaseHandsOn"
+);
 
-setupMethodRadios("releaseMethod", "releaseGcash", "releaseHandsOn");
-setupMethodRadios("paymentMethod", "paymentGcash", "paymentHandsOn");
+setupMethod(
+  "paymentMethod",
+  "paymentGcash",
+  "paymentHandsOn"
+);
 
-const loanForm = document.getElementById("loanForm");
+
+// ==========================================
+// APPLY LOAN
+// ==========================================
+
+const loanForm =
+  document.getElementById("loanForm");
 
 if (loanForm) {
-  loanForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
 
-    const message = document.getElementById("message");
-    const button = loanForm.querySelector('button[type="submit"]');
+  loanForm.addEventListener(
+    "submit",
+    async function (event) {
 
-    if (!GOOGLE_SHEET_URL) {
-      message.textContent = "Google Sheets Web App URL is not configured.";
-      message.className = "message error";
-      message.hidden = false;
-      return;
-    }
+      event.preventDefault();
 
-    const method = document.querySelector('input[name="releaseMethod"]:checked')?.value || "GCash";
+      const message =
+        document.getElementById(
+          "message"
+        );
 
-    const data = {
-      name: document.getElementById("name")?.value.trim() || "",
-      amount: Number(document.getElementById("amount")?.value || 0),
-      releaseMethod: method,
-      releaseGcashName: document.getElementById("releaseGcashName")?.value.trim() || "",
-      releaseGcashNumber: document.getElementById("releaseGcashNumber")?.value.trim() || "",
-      releaseHandsOnAddress: document.getElementById("releaseHandsOnAddress")?.value.trim() || ""
-    };
+      const button =
+        loanForm.querySelector(
+          'button[type="submit"]'
+        );
 
-    if (!data.name) {
-      message.textContent = "Name is required.";
-      message.className = "message error";
-      message.hidden = false;
-      return;
-    }
-
-    if (!Number.isFinite(data.amount) || data.amount <= 0) {
-      message.textContent = "Enter a valid loan amount.";
-      message.className = "message error";
-      message.hidden = false;
-      return;
-    }
-
-    if (method === "GCash" && (!data.releaseGcashName || !data.releaseGcashNumber)) {
-      message.textContent = "GCash Name and GCash Number are required.";
-      message.className = "message error";
-      message.hidden = false;
-      return;
-    }
-
-    if (method === "Hands-On" && !data.releaseHandsOnAddress) {
-      message.textContent = "Hands-On Address is required.";
-      message.className = "message error";
-      message.hidden = false;
-      return;
-    }
-
-    button.disabled = true;
-    message.hidden = true;
-    message.className = "message";
-
-    try {
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.message || "Application failed.");
+      if (button) {
+        button.disabled = true;
       }
 
-      message.textContent = "Application recorded successfully. Due Date: 15 days from today. Status: Unpaid";
-      message.hidden = false;
-      loanForm.reset();
-
-      if (totalPreview) {
-        totalPreview.textContent = "₱0.00";
+      if (message) {
+        message.hidden = true;
+        message.className = "message";
       }
-    } catch (error) {
-      message.textContent = error.message || "Unable to submit application.";
-      message.className = "message error";
-      message.hidden = false;
-    } finally {
-      button.disabled = false;
+
+
+      // ------------------------------
+      // GET FORM VALUES
+      // ------------------------------
+
+      const name =
+        document.getElementById(
+          "name"
+        )?.value.trim() || "";
+
+      const amount =
+        Number(
+          document.getElementById(
+            "amount"
+          )?.value || 0
+        );
+
+      const selectedMethod =
+        document.querySelector(
+          'input[name="releaseMethod"]:checked'
+        );
+
+      const releaseMethod =
+        selectedMethod
+          ? selectedMethod.value
+          : "GCash";
+
+
+      const gcashName =
+        document.getElementById(
+          "releaseGcashName"
+        )?.value.trim() || "";
+
+      const gcashNumber =
+        document.getElementById(
+          "releaseGcashNumber"
+        )?.value.trim() || "";
+
+      const handsOnAddress =
+        document.getElementById(
+          "releaseHandsOnAddress"
+        )?.value.trim() || "";
+
+
+      // ------------------------------
+      // VALIDATION
+      // ------------------------------
+
+      if (!name) {
+        showMessage(
+          message,
+          "Name is required.",
+          true
+        );
+
+        if (button) button.disabled = false;
+        return;
+      }
+
+
+      if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+      ) {
+        showMessage(
+          message,
+          "Enter a valid loan amount.",
+          true
+        );
+
+        if (button) button.disabled = false;
+        return;
+      }
+
+
+      if (
+        releaseMethod === "GCash"
+      ) {
+
+        if (
+          !gcashName ||
+          !gcashNumber
+        ) {
+          showMessage(
+            message,
+            "GCash Name and GCash Number are required.",
+            true
+          );
+
+          if (button) button.disabled = false;
+          return;
+        }
+      }
+
+
+      if (
+        releaseMethod === "Hands-On"
+      ) {
+
+        if (!handsOnAddress) {
+          showMessage(
+            message,
+            "Address is required for Hands-On.",
+            true
+          );
+
+          if (button) button.disabled = false;
+          return;
+        }
+      }
+
+
+      // ------------------------------
+      // DATA SENT TO APPS SCRIPT
+      // ------------------------------
+
+      const data = {
+
+        name: name,
+
+        amount: amount,
+
+        releaseMethod:
+          releaseMethod,
+
+        releaseGcashName:
+          releaseMethod === "GCash"
+            ? gcashName
+            : "",
+
+        releaseGcashNumber:
+          releaseMethod === "GCash"
+            ? gcashNumber
+            : "",
+
+        releaseHandsOnAddress:
+          releaseMethod === "Hands-On"
+            ? handsOnAddress
+            : ""
+      };
+
+
+      console.log(
+        "Sending loan application:",
+        data
+      );
+
+
+      // ------------------------------
+      // SEND TO GOOGLE APPS SCRIPT
+      // ------------------------------
+
+      try {
+
+        await fetch(
+          GOOGLE_SHEET_URL,
+          {
+            method: "POST",
+
+            mode: "no-cors",
+
+            headers: {
+              "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body:
+              JSON.stringify(data)
+          }
+        );
+
+
+        // --------------------------
+        // SUCCESS
+        // --------------------------
+
+        showMessage(
+          message,
+          "Application recorded successfully! Due Date is 15 days from today. Status: Unpaid."
+        );
+
+
+        loanForm.reset();
+
+
+        if (totalPreview) {
+          totalPreview.textContent =
+            "₱0.00 × 1.20 = ₱0.00";
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "Google Apps Script error:",
+          error
+        );
+
+        showMessage(
+          message,
+          "Failed to submit application. Please try again.",
+          true
+        );
+
+      } finally {
+
+        if (button) {
+          button.disabled = false;
+        }
+
+      }
     }
-  });
+  );
 }
 
-const paymentForm = document.getElementById("paymentForm");
+
+// ==========================================
+// PAY LOAN
+// ==========================================
+
+const paymentForm =
+  document.getElementById(
+    "paymentForm"
+  );
 
 if (paymentForm) {
-  const info = document.getElementById("gcashInfo");
-  if (info && CFG.GCASH_NAME && CFG.GCASH_NUMBER) {
-    info.textContent = `${CFG.GCASH_NAME} • ${CFG.GCASH_NUMBER}`;
-  }
 
-  paymentForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const message = document.getElementById("paymentMessage");
-    message.textContent = "Payment submitted for admin verification. The status should become Paid only after the admin verifies the payment.";
-    message.hidden = false;
-  });
+  paymentForm.addEventListener(
+    "submit",
+    function (event) {
+
+      event.preventDefault();
+
+      const message =
+        document.getElementById(
+          "paymentMessage"
+        );
+
+      showMessage(
+        message,
+        "Payment submitted for admin verification. The loan will only be marked Paid after verification."
+      );
+    }
+  );
 }
