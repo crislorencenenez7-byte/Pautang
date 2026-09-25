@@ -1,134 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111827">
-  <title>PautangMo | Loan Application</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PautangMo</title><link rel="stylesheet" href="style.css"></head>
 <body>
-  <div class="bg-orb orb-one"></div><div class="bg-orb orb-two"></div>
-
-  <header class="topbar">
-    <a class="brand" href="#"><span class="brand-mark">₱</span><span>PautangMo</span></a>
-    <a class="admin-link" href="admin.html">Admin Access</a>
-  </header>
-
-  <main class="shell">
-    <section class="hero">
-      <div>
-        <span class="eyebrow">SIMPLE • CLEAR • ORGANIZED</span>
-        <h1>Loan management made <span>simple.</span></h1>
-        <p>Submit a loan application, choose your release method, and keep your payment details organized in one place.</p>
-      </div>
-      <div class="hero-badge"><strong>20%</strong><span>interest</span><small>15-day due date</small></div>
-    </section>
-
-    <section class="grid">
-      <div class="panel">
-        <div class="panel-head">
-          <div><span class="step">STEP 1</span><h2>Apply for a loan</h2><p>Enter the borrower details and choose how the loan will be released.</p></div>
-        </div>
-
-        <form id="loanForm">
-          <div class="field">
-            <label for="name">Borrower name</label>
-            <input id="name" name="name" type="text" placeholder="Full name" required autocomplete="name">
-          </div>
-
-          <div class="field">
-            <label for="amount">Loan amount</label>
-            <div class="money-input"><span>₱</span><input id="amount" name="amount" type="number" min="1" step="0.01" placeholder="0.00" required></div>
-          </div>
-
-          <div class="summary-card">
-            <div><span>Interest</span><strong>20%</strong></div>
-            <div><span>Total to repay</span><strong id="totalPreview">₱0.00</strong></div>
-            <div><span>Due</span><strong>15 days</strong></div>
-          </div>
-
-          <fieldset>
-            <legend>Loan release method</legend>
-            <div class="method-grid">
-              <label class="method-card">
-                <input type="radio" name="releaseMethod" value="GCash" checked>
-                <span class="method-icon">G</span><span><b>GCash</b><small>Receive through GCash</small></span>
-              </label>
-              <label class="method-card">
-                <input type="radio" name="releaseMethod" value="Hands-On">
-                <span class="method-icon">H</span><span><b>Hands-On</b><small>Receive in person</small></span>
-              </label>
-            </div>
-          </fieldset>
-
-          <div id="releaseGcash" class="method-details">
-            <div class="notice"><b>GCash release</b><span>Make sure the GCash details you provide are correct.</span></div>
-            <div class="field"><label for="releaseGcashName">GCash account name</label><input id="releaseGcashName" placeholder="Name registered to GCash"></div>
-            <div class="field"><label for="releaseGcashNumber">GCash number</label><input id="releaseGcashNumber" inputmode="tel" placeholder="09XXXXXXXXX"></div>
-          </div>
-
-          <div id="releaseHandsOn" class="method-details hidden">
-            <div class="notice"><b>Hands-On release</b><span>Admin will provide the agreed meeting/release instructions.</span></div>
-          </div>
-
-          <button class="primary-btn" type="submit"><span>Submit loan application</span><span>→</span></button>
-          <div id="message" class="message" hidden></div>
-        </form>
-      </div>
-
-      <aside class="panel side-panel">
-        <span class="step">HOW IT WORKS</span>
-        <div class="timeline">
-          <div><i>1</i><span><b>Apply</b><small>Submit your name, amount and release method.</small></span></div>
-          <div><i>2</i><span><b>Review</b><small>The application is recorded for admin review.</small></span></div>
-          <div><i>3</i><span><b>Release</b><small>Receive the approved loan using the selected method.</small></span></div>
-          <div><i>4</i><span><b>Pay</b><small>Use the Pay Loan section when you are ready to settle.</small></span></div>
-        </div>
-        <div class="safe-note">Keep payment receipts and screenshots until your payment has been verified.</div>
-      </aside>
-    </section>
-
-    <section class="panel pay-panel" id="pay">
-      <div class="panel-head">
-        <div><span class="step">STEP 2</span><h2>Pay your loan</h2><p>Choose GCash or Hands-On payment. GCash payments require proof for admin verification.</p></div>
-        <span class="status-pill">UNPAID → PAID</span>
-      </div>
-
-      <form id="paymentForm">
-        <div class="two-col">
-          <div class="field"><label for="payName">Borrower name</label><input id="payName" required placeholder="Name on the loan record"></div>
-          <div class="field"><label for="payAmount">Amount paid</label><div class="money-input"><span>₱</span><input id="payAmount" type="number" min="0.01" step="0.01" required placeholder="Total amount"></div></div>
-        </div>
-
-        <fieldset>
-          <legend>Payment method</legend>
-          <div class="method-grid">
-            <label class="method-card"><input type="radio" name="paymentMethod" value="GCash" checked><span class="method-icon">G</span><span><b>GCash</b><small>Send and upload proof</small></span></label>
-            <label class="method-card"><input type="radio" name="paymentMethod" value="Hands-On"><span class="method-icon">H</span><span><b>Hands-On</b><small>Pay directly in person</small></span></label>
-          </div>
-        </fieldset>
-
-        <div id="paymentGcash" class="method-details">
-          <div class="gcash-box">
-            <div><span class="mini-label">SEND PAYMENT TO</span><h3 id="gcashName">GCash Name — set in config.js</h3><strong id="gcashNumber">09XXXXXXXXX</strong></div>
-            <div id="gcashQr" class="qr-placeholder">GCASH QR<br><small>Add QR URL in config.js</small></div>
-          </div>
-          <div class="field"><label for="proof">Payment proof screenshot</label><input id="proof" type="file" accept="image/*"><small class="helper">Keep the screenshot clear and readable. The current Google Apps Script must be updated with the included Code.gs to save proof files.</small></div>
-        </div>
-
-        <div id="paymentHandsOn" class="method-details hidden">
-          <div class="notice"><b>Hands-On payment</b><span>Pay directly to the authorized person and keep your receipt. Admin will confirm the payment before changing the record to Paid.</span></div>
-        </div>
-
-        <button class="secondary-btn" type="submit">Submit payment for verification <span>→</span></button>
-        <div id="paymentMessage" class="message" hidden></div>
-      </form>
-    </section>
-
-    <footer><span>© <span id="year"></span> PautangMo</span><span>For organized loan record keeping</span></footer>
-  </main>
-  <script src="config.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+<header class="topbar">
+<a class="brand" href="index.html">₱ PautangMo</a>
+<nav class="main-nav" aria-label="Main navigation">
+<a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="admin-login.html">Admin</a>
+</nav></header>
+<main class="shell">
+<section class="hero">
+<div><p class="eyebrow">SIMPLE • MOBILE • ORGANIZED</p>
+<h1>Manage your loan <span>easily.</span></h1>
+<p>Apply for a loan or pay an existing loan from separate pages. Built to work comfortably on phones without Desktop Site.</p>
+<div class="action-row"><a class="primary-btn" href="apply.html">Apply Loan →</a><a class="secondary-btn" href="pay.html">Pay Loan →</a></div></div>
+<div class="hero-badge"><strong>20%</strong><span>interest</span><small>15-day due date</small></div>
+</section>
+<section class="feature-grid">
+<a class="feature-card" href="apply.html"><div class="feature-icon">₱</div><h2>Apply Loan</h2><p>Submit borrower information and choose GCash or Hands-On release.</p><b>Open →</b></a>
+<a class="feature-card" href="pay.html"><div class="feature-icon">✓</div><h2>Pay Loan</h2><p>Choose GCash or Hands-On payment and submit proof for verification.</p><b>Open →</b></a>
+</section>
+<footer>© <span id="year"></span> PautangMo</footer>
+</main><script>year.textContent=new Date().getFullYear()</script>
+<script>
+(function(){
+  const nav=document.querySelector(".main-nav");
+  if(!nav) return;
+  const bar=document.querySelector(".topbar");
+  const btn=document.createElement("button");
+  btn.className="mobile-nav-toggle";
+  btn.type="button";
+  btn.setAttribute("aria-label","Open navigation");
+  btn.textContent="☰";
+  bar.insertBefore(btn, nav);
+  btn.addEventListener("click",()=>{
+    nav.classList.toggle("open");
+    bar.classList.toggle("nav-open");
+    btn.textContent=nav.classList.contains("open")?"✕":"☰";
+  });
+})();
+</script>
+</body></html>

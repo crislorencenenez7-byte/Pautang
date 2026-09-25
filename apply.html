@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply Loan | PautangMo</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="topbar"><a class="brand" href="index.html">₱ PautangMo</a>
+<nav class="main-nav"><a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="admin-login.html">Admin</a></nav></header>
+<main class="shell"><section class="hero compact-hero"><div><p class="eyebrow">APPLY LOAN</p><h1>Apply for a <span>loan.</span></h1><p>20% interest is calculated automatically and the due date is 15 days from the application date.</p></div></section>
+<section class="panel"><form id="loanForm">
+<label>Borrower name<input id="name" required autocomplete="name" placeholder="Full name"></label>
+<label>Loan amount<input id="amount" type="number" min="1" step="0.01" required placeholder="₱ 0.00"></label>
+<div class="summary-card"><b>Total to repay</b><strong id="totalPreview">₱0.00</strong><span>20% interest • Due in 15 days</span></div>
+<fieldset><legend>Loan release method</legend><div class="method-grid">
+<label class="method-card"><input type="radio" name="releaseMethod" value="GCash" checked><b>GCash</b><small>Receive through GCash</small></label>
+<label class="method-card"><input type="radio" name="releaseMethod" value="Hands-On"><b>Hands-On</b><small>Receive in person</small></label></div></fieldset>
+<div id="releaseGcash"><label>GCash account name<input id="releaseGcashName" placeholder="Registered name"></label>
+<label>GCash number<input id="releaseGcashNumber" inputmode="tel" placeholder="09XXXXXXXXX"></label></div>
+<div id="releaseHandsOn" hidden><div class="notice">Admin will provide the Hands-On release instructions.</div></div>
+<button class="primary-btn" type="submit">Submit Application →</button><div id="message" class="message" hidden></div>
+</form></section><footer>© <span id="year"></span> PautangMo</footer></main>
+<script src="script.js"></script>
+<script>
+(function(){
+  const nav=document.querySelector(".main-nav");
+  if(!nav) return;
+  const bar=document.querySelector(".topbar");
+  const btn=document.createElement("button");
+  btn.className="mobile-nav-toggle";
+  btn.type="button";
+  btn.setAttribute("aria-label","Open navigation");
+  btn.textContent="☰";
+  bar.insertBefore(btn, nav);
+  btn.addEventListener("click",()=>{
+    nav.classList.toggle("open");
+    bar.classList.toggle("nav-open");
+    btn.textContent=nav.classList.contains("open")?"✕":"☰";
+  });
+})();
+</script>
+</body></html>

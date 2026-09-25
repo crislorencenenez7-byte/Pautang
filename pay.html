@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pay Loan | PautangMo</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="topbar"><a class="brand" href="index.html">₱ PautangMo</a>
+<nav class="main-nav"><a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="admin-login.html">Admin</a></nav></header>
+<main class="shell"><section class="hero compact-hero"><div><p class="eyebrow">PAY LOAN</p><h1>Pay your <span>loan.</span></h1><p>Select a payment method. GCash payments can include a screenshot as proof for admin verification.</p></div></section>
+<section class="panel"><form id="paymentForm">
+<label>Borrower name<input id="payName" required placeholder="Name on loan record"></label>
+<label>Amount paid<input id="payAmount" type="number" min="0.01" step="0.01" required placeholder="₱ 0.00"></label>
+<fieldset><legend>Payment method</legend><div class="method-grid">
+<label class="method-card"><input type="radio" name="paymentMethod" value="GCash" checked><b>GCash</b><small>Send payment + proof</small></label>
+<label class="method-card"><input type="radio" name="paymentMethod" value="Hands-On"><b>Hands-On</b><small>Pay in person</small></label></div></fieldset>
+<div id="paymentGcash"><div class="notice"><b>GCash payment</b><span id="gcashInfo">Use the GCash details provided by the administrator.</span></div>
+<label>Payment proof screenshot<input id="proof" type="file" accept="image/*"><small>Admin verifies the proof before changing the status to Paid.</small></label></div>
+<div id="paymentHandsOn" hidden><div class="notice">Pay directly to the authorized person and keep your receipt. Admin confirms the payment.</div></div>
+<button class="secondary-btn" type="submit">Submit Payment →</button><div id="paymentMessage" class="message" hidden></div>
+</form></section><footer>© <span id="year"></span> PautangMo</footer></main>
+<script src="script.js"></script>
+<script>
+(function(){
+  const nav=document.querySelector(".main-nav");
+  if(!nav) return;
+  const bar=document.querySelector(".topbar");
+  const btn=document.createElement("button");
+  btn.className="mobile-nav-toggle";
+  btn.type="button";
+  btn.setAttribute("aria-label","Open navigation");
+  btn.textContent="☰";
+  bar.insertBefore(btn, nav);
+  btn.addEventListener("click",()=>{
+    nav.classList.toggle("open");
+    bar.classList.toggle("nav-open");
+    btn.textContent=nav.classList.contains("open")?"✕":"☰";
+  });
+})();
+</script>
+</body></html>
