@@ -1,11 +1,240 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login | PautangMo</title><link rel="stylesheet" href="style.css"><script src="firebase-config.js"></script></head>
-<body><main class="auth-shell"><section class="auth-card">
-<a class="brand" href="index.html">₱ PautangMo</a><p class="eyebrow">BORROWER ACCOUNT</p><h1>Welcome back.</h1><p>Sign in to manage your loan and payment information.</p>
-<form id="loginForm"><label>Email<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></label><button class="primary-btn" type="submit">Login →</button><div id="message" class="message" hidden></div></form>
-<p class="auth-switch">No account yet? <a href="register.html">Register</a></p><a href="index.html">← Back to website</a>
-</section></main>
-<script type="module">import {auth,signInWithEmailAndPassword} from './auth.js';
-const form=document.getElementById('loginForm'),msg=document.getElementById('message');
-form.addEventListener('submit',async e=>{e.preventDefault();msg.hidden=true;try{const c=await signInWithEmailAndPassword(auth,document.getElementById('email').value.trim(),document.getElementById('password').value);if(!c.user.emailVerified){msg.textContent='Please verify your email before continuing.';msg.className='message error';msg.hidden=false;return;}location.href='apply.html';}catch(err){msg.textContent='Invalid email or password.';msg.className='message error';msg.hidden=false;}});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Login - PautangMo</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="firebase-config.js"></script>
+
+</head>
+
+<body>
+
+  <header>
+
+    <nav>
+
+      <a href="index.html">Home</a>
+
+      <a href="apply.html">Apply Loan</a>
+
+      <a href="pay.html">Pay Loan</a>
+
+      <a href="login.html">Login</a>
+
+      <a href="register.html">Register</a>
+
+      <a href="admin-login.html">Admin</a>
+
+    </nav>
+
+  </header>
+
+
+  <main class="auth-container">
+
+    <div class="auth-box">
+
+      <h1>Login</h1>
+
+      <p>
+        Login to your PautangMo account.
+      </p>
+
+
+      <form id="loginForm">
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          required
+        >
+
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          required
+        >
+
+
+        <button type="submit">
+          Login
+        </button>
+
+      </form>
+
+
+      <p id="message"></p>
+
+
+      <p class="auth-switch">
+
+        Don't have an account?
+
+        <a href="register.html">
+          Register
+        </a>
+
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <script type="module">
+
+    import {
+      auth,
+      signInWithEmailAndPassword,
+      signOut
+    } from "./auth.js";
+
+
+    const form =
+      document.getElementById("loginForm");
+
+    const message =
+      document.getElementById("message");
+
+
+    const params =
+      new URLSearchParams(location.search);
+
+    const next =
+      params.get("next") || "apply.html";
+
+
+    form.addEventListener(
+      "submit",
+      async (event) => {
+
+        event.preventDefault();
+
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
+
+
+        try {
+
+          message.textContent =
+            "Logging in...";
+
+
+          const credential =
+            await signInWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+
+
+          const user =
+            credential.user;
+
+
+          /*
+           * REQUIRE EMAIL VERIFICATION
+           */
+
+          if (!user.emailVerified) {
+
+            await signOut(auth);
+
+            message.textContent =
+              "Please verify your email first.";
+
+            return;
+          }
+
+
+          /*
+           * LOGIN SUCCESS
+           */
+
+          location.href = next;
+
+
+        } catch (error) {
+
+          console.error(error);
+
+
+          let errorMessage =
+            "Login failed.";
+
+
+          if (
+            error.code ===
+            "auth/invalid-credential"
+          ) {
+
+            errorMessage =
+              "Incorrect email or password.";
+
+          } else if (
+            error.code ===
+            "auth/user-not-found"
+          ) {
+
+            errorMessage =
+              "Account not found.";
+
+          } else if (
+            error.code ===
+            "auth/wrong-password"
+          ) {
+
+            errorMessage =
+              "Incorrect password.";
+
+          } else if (error.message) {
+
+            errorMessage =
+              error.message;
+
+          }
+
+
+          message.textContent =
+            errorMessage;
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
