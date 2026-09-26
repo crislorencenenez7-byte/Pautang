@@ -2,104 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register | PautangMo</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="auth-shell">
     <section class="auth-card">
       <a class="brand" href="index.html">₱ PautangMo</a>
-
       <p class="eyebrow">CREATE ACCOUNT</p>
-
       <h1>Join PautangMo</h1>
-
-      <p>
-        Create your client account.
-        Every new registration starts as a client.
-      </p>
+      <p>Create your client account. Every new registration starts as a client.</p>
 
       <form id="registerForm">
-        <label for="name">
+        <label>
           Full Name
-          <input
-            id="name"
-            type="text"
-            autocomplete="name"
-            required
-            placeholder="Your full name"
-          >
+          <input id="name" type="text" autocomplete="name" required placeholder="Your full name">
         </label>
 
-        <label for="email">
+        <label>
           Email
-          <input
-            id="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          >
+          <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
         </label>
 
-        <label for="password">
+        <label>
           Password
-          <input
-            id="password"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-            placeholder="At least 6 characters"
-          >
+          <input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters">
         </label>
 
-        <label for="confirmPassword">
+        <label>
           Confirm Password
-          <input
-            id="confirmPassword"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-            placeholder="Repeat password"
-          >
+          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat password">
         </label>
 
-        <button
-          class="primary-btn"
-          id="registerButton"
-          type="submit"
-        >
-          Create account →
-        </button>
-
-        <div
-          id="message"
-          class="message"
-          hidden
-        ></div>
+        <button class="primary-btn" id="registerButton" type="submit">Create account →</button>
+        <div id="message" class="message" hidden></div>
       </form>
 
-      <a href="login.html">
-        Already have an account? Sign in →
-      </a>
-
-      <br>
-
-      <a href="index.html">
-        ← Back to website
-      </a>
+      <a href="login.html">Already have an account? Sign in →</a><br>
+      <a href="index.html">← Back to website</a>
     </section>
   </main>
 
   <script src="firebase-config.js"></script>
-
   <script type="module">
     import {
       auth,
@@ -108,7 +53,6 @@
       sendEmailVerification,
       updateProfile
     } from "./auth.js";
-
     import {
       doc,
       setDoc,
@@ -116,62 +60,48 @@
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const form = document.getElementById("registerForm");
-    const msg = document.getElementById("message");
-    const btn = document.getElementById("registerButton");
+    const message = document.getElementById("message");
+    const registerButton = document.getElementById("registerButton");
 
-    function show(text, error = false) {
-      msg.textContent = text;
-      msg.className = error
-        ? "message error"
-        : "message";
-      msg.hidden = false;
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.className = isError ? "message error" : "message";
+      message.hidden = false;
     }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      message.hidden = true;
 
-      msg.hidden = true;
-
-      const name =
-        document.getElementById("name").value.trim();
-
-      const email =
-        document.getElementById("email").value.trim();
-
-      const password =
-        document.getElementById("password").value;
-
-      const confirmPassword =
-        document.getElementById("confirmPassword").value;
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
 
       if (!name) {
-        show("Please enter your full name.", true);
+        showMessage("Please enter your full name.", true);
         return;
       }
 
       if (password !== confirmPassword) {
-        show("Passwords do not match.", true);
+        showMessage("Passwords do not match.", true);
         return;
       }
 
       if (password.length < 6) {
-        show(
-          "Password must be at least 6 characters.",
-          true
-        );
+        showMessage("Password must be at least 6 characters.", true);
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = "Creating account...";
+      registerButton.disabled = true;
+      registerButton.textContent = "Creating account...";
 
       try {
-        const credential =
-          await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
         const user = credential.user;
 
@@ -179,73 +109,39 @@
           displayName: name
         });
 
-        /*
-         * Every newly registered account
-         * starts as CLIENT.
-         */
+        // Every newly registered user is a client.
+        await setDoc(doc(db, "users", user.uid), {
+          name,
+          email: user.email,
+          role: "client",
+          createdAt: serverTimestamp()
+        });
 
-        await setDoc(
-          doc(db, "users", user.uid),
-          {
-            name: name,
-            email: user.email,
-            role: "client",
-            createdAt: serverTimestamp()
-          }
-        );
-
-        /*
-         * Firebase sends the verification email.
-         */
-
+        // Send verification only once during registration.
         await sendEmailVerification(user);
 
-        show(
-          "Account created! Check your email " +
-          "and verify your account."
+        showMessage(
+          "Account created! Check your email and verify your account."
         );
-
         form.reset();
-
       } catch (error) {
-        console.error(
-          "Registration error:",
-          error
-        );
+        console.error(error);
 
-        let text = "Registration failed.";
+        const errorMessage =
+          error.code === "auth/email-already-in-use"
+            ? "This email is already registered. Please use Login instead."
+            : error.code === "auth/invalid-email"
+              ? "Invalid email address."
+              : error.code === "auth/weak-password"
+                ? "Password must be at least 6 characters."
+                : error.code === "permission-denied"
+                  ? "Firestore permission denied. Publish the Firestore rules."
+                  : error.message || "Registration failed.";
 
-        if (
-          error.code ===
-          "auth/email-already-in-use"
-        ) {
-          text = "This email is already registered.";
-        } else if (
-          error.code ===
-          "auth/invalid-email"
-        ) {
-          text = "Invalid email address.";
-        } else if (
-          error.code ===
-          "auth/weak-password"
-        ) {
-          text =
-            "Password must be at least 6 characters.";
-        } else if (
-          error.code === "permission-denied"
-        ) {
-          text =
-            "Firestore permission denied. " +
-            "Publish the Firestore rules.";
-        } else if (error.message) {
-          text = error.message;
-        }
-
-        show(text, true);
-
+        showMessage(errorMessage, true);
       } finally {
-        btn.disabled = false;
-        btn.textContent = "Create account →";
+        registerButton.disabled = false;
+        registerButton.textContent = "Create account →";
       }
     });
   </script>

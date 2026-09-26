@@ -2,89 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login | PautangMo</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="auth-shell">
     <section class="auth-card">
       <a class="brand" href="index.html">₱ PautangMo</a>
-
       <p class="eyebrow">CLIENT ACCESS</p>
-
       <h1>Sign in to PautangMo</h1>
-
-      <p>
-        Login to your account to continue to your loan application.
-      </p>
+      <p>Login to your account to continue to your loan application.</p>
 
       <form id="loginForm">
-        <label for="email">
+        <label>
           Email
-          <input
-            id="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder="you@example.com"
-          >
+          <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
         </label>
 
-        <label for="password">
+        <label>
           Password
-          <input
-            id="password"
-            type="password"
-            autocomplete="current-password"
-            required
-            placeholder="Password"
-          >
+          <input id="password" type="password" autocomplete="current-password" required placeholder="Password">
         </label>
 
-        <button
-          class="primary-btn"
-          id="loginButton"
-          type="submit"
-        >
-          Sign in →
-        </button>
+        <button class="primary-btn" id="loginButton" type="submit">Sign in →</button>
+        <button class="primary-btn" id="resendButton" type="button" hidden>Resend verification email</button>
 
-        <div
-          id="message"
-          class="message"
-          hidden
-        ></div>
-
-        <button
-          class="secondary-btn"
-          id="resendButton"
-          type="button"
-          hidden
-          style="width:100%;margin-top:10px;"
-        >
-          Resend verification email
-        </button>
+        <div id="message" class="message" hidden></div>
       </form>
 
-      <a href="register.html">
-        Create a new account →
-      </a>
-
-      <br>
-
-      <a href="index.html">
-        ← Back to website
-      </a>
+      <a href="register.html">Create a new account →</a><br>
+      <a href="index.html">← Back to website</a>
     </section>
   </main>
 
   <script src="firebase-config.js"></script>
-
   <script type="module">
     import {
       auth,
@@ -94,145 +46,103 @@
     } from "./auth.js";
 
     const form = document.getElementById("loginForm");
-    const msg = document.getElementById("message");
-    const btn = document.getElementById("loginButton");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const message = document.getElementById("message");
+    const loginButton = document.getElementById("loginButton");
     const resendButton = document.getElementById("resendButton");
 
-    const next =
-      new URLSearchParams(location.search).get("next") ||
-      "apply.html";
-
+    const next = new URLSearchParams(location.search).get("next") || "apply.html";
     let unverifiedUser = null;
 
-    function showMessage(text, error = false) {
-      msg.textContent = text;
-      msg.className = error
-        ? "message error"
-        : "message";
-      msg.hidden = false;
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.className = isError ? "message error" : "message";
+      message.hidden = false;
     }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-
-      msg.hidden = true;
+      message.hidden = true;
       resendButton.hidden = true;
       unverifiedUser = null;
-
-      btn.disabled = true;
-      btn.textContent = "Signing in...";
+      loginButton.disabled = true;
+      loginButton.textContent = "Signing in...";
 
       try {
-        const email =
-          document.getElementById("email").value.trim();
-
-        const password =
-          document.getElementById("password").value;
-
-        const credential =
-          await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          emailInput.value.trim(),
+          passwordInput.value
+        );
 
         const user = credential.user;
 
+        // A verified account is NOT sent another verification email.
         if (!user.emailVerified) {
           unverifiedUser = user;
-
-          showMessage(
-            "Your email is not verified yet. " +
-            "Check your inbox or resend the verification email.",
-            true
-          );
-
-          resendButton.hidden = false;
-
           await signOut(auth);
-
+          showMessage("Please verify your email before logging in.", true);
+          resendButton.hidden = false;
           return;
         }
 
-        window.location.href = next;
-
-      } catch (error) {
-        console.error("Login error:", error);
-
-        let text = "Login failed.";
-
-        if (error.code === "auth/invalid-credential") {
-          text = "Incorrect email or password.";
-        } else if (error.code === "auth/user-not-found") {
-          text = "Account not found.";
-        } else if (error.code === "auth/wrong-password") {
-          text = "Incorrect password.";
-        } else if (error.code === "auth/too-many-requests") {
-          text =
-            "Too many login attempts. Please try again later.";
-        } else if (error.message) {
-          text = error.message;
+        // Send the login notification through the server only.
+        // The email-service API key must never be placed in this HTML file.
+        try {
+          await fetch("/api/login-notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: user.email,
+              name: user.displayName || "PautangMo Client"
+            })
+          });
+        } catch (notifyError) {
+          console.warn("Login notification could not be sent:", notifyError);
         }
 
-        showMessage(text, true);
+        location.href = next;
+      } catch (error) {
+        console.error(error);
 
+        const errorMessage =
+          error.code === "auth/invalid-credential"
+            ? "Incorrect email or password."
+            : error.code === "auth/too-many-requests"
+              ? "Too many attempts. Please wait and try again."
+              : error.message || "Login failed.";
+
+        showMessage(errorMessage, true);
       } finally {
-        btn.disabled = false;
-        btn.textContent = "Sign in →";
+        loginButton.disabled = false;
+        loginButton.textContent = "Sign in →";
       }
     });
 
     resendButton.addEventListener("click", async () => {
-      const email =
-        document.getElementById("email").value.trim();
-
-      const password =
-        document.getElementById("password").value;
+      if (!unverifiedUser) {
+        showMessage("Please sign in first with an unverified account.", true);
+        return;
+      }
 
       resendButton.disabled = true;
       resendButton.textContent = "Sending...";
 
       try {
-        /*
-         * Firebase only sends verification emails when requested.
-         * A normal successful login does NOT automatically send an email.
-         */
-
-        if (!unverifiedUser) {
-          const credential =
-            await signInWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-          unverifiedUser = credential.user;
-        }
-
         await sendEmailVerification(unverifiedUser);
-
-        showMessage(
-          "Verification email sent. Please check your inbox."
-        );
-
-        await signOut(auth);
-
+        showMessage("Verification email sent. Check your inbox.");
       } catch (error) {
-        console.error(
-          "Resend verification error:",
-          error
-        );
-
+        console.error(error);
         showMessage(
-          error.message ||
-            "Unable to send the verification email.",
+          error.code === "auth/too-many-requests"
+            ? "Please wait before requesting another verification email."
+            : error.message || "Unable to send verification email.",
           true
         );
-
       } finally {
         resendButton.disabled = false;
-        resendButton.textContent =
-          "Resend verification email";
+        resendButton.textContent = "Resend verification email";
       }
     });
   </script>
