@@ -2,15 +2,16 @@ const GOOGLE_SHEET_URL =
   "https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
 
 
-// =====================================
+// ======================================
 // TOTAL PREVIEW
-// =====================================
+// ======================================
 
 const amountInput =
   document.getElementById("amount");
 
 const totalPreview =
   document.getElementById("totalPreview");
+
 
 function updateTotal() {
 
@@ -26,18 +27,15 @@ function updateTotal() {
 
   totalPreview.textContent =
     "₱" +
-    amount.toLocaleString("en-PH", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }) +
-    " × 1.20 = ₱" +
     total.toLocaleString("en-PH", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
 }
 
+
 if (amountInput) {
+
   amountInput.addEventListener(
     "input",
     updateTotal
@@ -47,79 +45,85 @@ if (amountInput) {
 }
 
 
-// =====================================
-// METHOD SWITCH
-// =====================================
+// ======================================
+// RELEASE METHOD
+// ======================================
 
-function setupMethod(
-  name,
-  gcashId,
-  handsOnId
-) {
+const releaseRadios =
+  document.querySelectorAll(
+    'input[name="releaseMethod"]'
+  );
 
-  const radios =
-    document.querySelectorAll(
-      `input[name="${name}"]`
+
+function updateReleaseMethod() {
+
+  const selected =
+    document.querySelector(
+      'input[name="releaseMethod"]:checked'
     );
 
-  function update() {
+  if (!selected) {
+    return;
+  }
 
-    const selected =
-      document.querySelector(
-        `input[name="${name}"]:checked`
-      );
+  const gcash =
+    document.getElementById(
+      "releaseGcash"
+    );
 
-    if (!selected) return;
+  const handsOn =
+    document.getElementById(
+      "releaseHandsOn"
+    );
 
-    const gcash =
-      document.getElementById(gcashId);
-
-    const handsOn =
-      document.getElementById(handsOnId);
-
-    const isGCash =
-      selected.value === "GCash";
+  if (selected.value === "GCash") {
 
     if (gcash) {
-      gcash.hidden = !isGCash;
+      gcash.hidden = false;
     }
 
     if (handsOn) {
-      handsOn.hidden = isGCash;
+      handsOn.hidden = true;
     }
+
+  } else {
+
+    if (gcash) {
+      gcash.hidden = true;
+    }
+
+    if (handsOn) {
+      handsOn.hidden = false;
+    }
+
   }
-
-  radios.forEach(
-    radio => {
-      radio.addEventListener(
-        "change",
-        update
-      );
-    }
-  );
-
-  update();
 }
 
-setupMethod(
-  "releaseMethod",
-  "releaseGcash",
-  "releaseHandsOn"
+
+releaseRadios.forEach(
+  radio => {
+
+    radio.addEventListener(
+      "change",
+      updateReleaseMethod
+    );
+
+  }
 );
 
-setupMethod(
-  "paymentMethod",
-  "paymentGcash",
-  "paymentHandsOn"
-);
+
+updateReleaseMethod();
 
 
-// =====================================
+// ======================================
 // APPLY LOAN
-// =====================================
+// ======================================
 
 const loanForm =
-  document.getElementById("loanForm");
+  document.getElementById(
+    "loanForm"
+  );
+
 
 if (loanForm) {
 
@@ -129,10 +133,12 @@ if (loanForm) {
 
       event.preventDefault();
 
+
       const message =
         document.getElementById(
           "message"
         );
+
 
       const button =
         loanForm.querySelector(
@@ -140,56 +146,69 @@ if (loanForm) {
         );
 
 
-      // -------------------------------
-      // VALUES
-      // -------------------------------
+      // ================================
+      // GET VALUES
+      // ================================
 
       const name =
-        document.getElementById(
-          "name"
-        )?.value.trim() || "";
+        document
+          .getElementById("name")
+          ?.value
+          .trim() || "";
+
 
       const amount =
         Number(
-          document.getElementById(
-            "amount"
-          )?.value || 0
+          document
+            .getElementById("amount")
+            ?.value || 0
         );
 
 
-      const method =
+      const releaseMethod =
         document.querySelector(
           'input[name="releaseMethod"]:checked'
         )?.value || "";
 
 
       const gcashName =
-        document.getElementById(
-          "releaseGcashName"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "releaseGcashName"
+          )
+          ?.value
+          .trim() || "";
 
 
       const gcashNumber =
-        document.getElementById(
-          "releaseGcashNumber"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "releaseGcashNumber"
+          )
+          ?.value
+          .trim() || "";
 
 
       const address =
-        document.getElementById(
-          "releaseHandsOnAddress"
-        )?.value.trim() || "";
+        document
+          .getElementById(
+            "releaseHandsOnAddress"
+          )
+          ?.value
+          .trim() || "";
 
 
-      // -------------------------------
+      // ================================
       // VALIDATION
-      // -------------------------------
+      // ================================
 
       if (!name) {
+
         showError(
           message,
           "Name is required."
         );
+
         return;
       }
 
@@ -198,58 +217,75 @@ if (loanForm) {
         !Number.isFinite(amount) ||
         amount <= 0
       ) {
+
         showError(
           message,
           "Enter a valid loan amount."
         );
+
         return;
       }
 
 
-      if (!method) {
+      if (!releaseMethod) {
+
         showError(
           message,
           "Please select GCash or Hands-On."
         );
+
         return;
       }
 
 
-      if (method === "GCash") {
+      if (
+        releaseMethod === "GCash"
+      ) {
 
         if (!gcashName) {
+
           showError(
             message,
             "GCash Name is required."
           );
+
           return;
         }
 
+
         if (!gcashNumber) {
+
           showError(
             message,
             "GCash Number is required."
           );
+
           return;
         }
+
       }
 
 
-      if (method === "Hands-On") {
+      if (
+        releaseMethod === "Hands-On"
+      ) {
 
         if (!address) {
+
           showError(
             message,
             "Address is required."
           );
+
           return;
         }
+
       }
 
 
-      // -------------------------------
+      // ================================
       // DATA
-      // -------------------------------
+      // ================================
 
       const data = {
 
@@ -258,22 +294,23 @@ if (loanForm) {
         amount: amount,
 
         releaseMethod:
-          method,
+          releaseMethod,
 
         releaseGcashName:
-          method === "GCash"
+          releaseMethod === "GCash"
             ? gcashName
             : "",
 
         releaseGcashNumber:
-          method === "GCash"
+          releaseMethod === "GCash"
             ? gcashNumber
             : "",
 
         releaseHandsOnAddress:
-          method === "Hands-On"
+          releaseMethod === "Hands-On"
             ? address
             : ""
+
       };
 
 
@@ -283,9 +320,9 @@ if (loanForm) {
       );
 
 
-      // -------------------------------
-      // BUTTON
-      // -------------------------------
+      // ================================
+      // DISABLE BUTTON
+      // ================================
 
       if (button) {
         button.disabled = true;
@@ -293,57 +330,71 @@ if (loanForm) {
 
 
       if (message) {
+
         message.hidden = true;
+
         message.className =
           "message";
+
       }
 
 
-      // -------------------------------
-      // SEND
-      // -------------------------------
+      // ================================
+      // SEND TO GOOGLE SHEETS
+      // ================================
 
       try {
 
         await fetch(
           GOOGLE_SHEET_URL,
           {
+
             method: "POST",
 
             mode: "no-cors",
 
             headers: {
+
               "Content-Type":
                 "text/plain;charset=utf-8"
+
             },
 
             body:
               JSON.stringify(data)
+
           }
         );
 
 
-        // -----------------------------
+        // ============================
         // SUCCESS
-        // -----------------------------
+        // ============================
 
         if (message) {
 
           message.textContent =
             "Application recorded successfully! " +
+            "20% interest applied. " +
             "Due Date: 15 days from today. " +
             "Status: Unpaid.";
 
           message.hidden = false;
+
         }
 
 
         loanForm.reset();
 
 
+        updateReleaseMethod();
+
+
         if (totalPreview) {
+
           totalPreview.textContent =
-            "₱0.00 × 1.20 = ₱0.00";
+            "₱0.00";
+
         }
 
 
@@ -353,6 +404,7 @@ if (loanForm) {
           "Submit error:",
           error
         );
+
 
         showError(
           message,
@@ -364,40 +416,49 @@ if (loanForm) {
         if (button) {
           button.disabled = false;
         }
+
       }
+
     }
   );
+
 }
 
 
-// =====================================
+// ======================================
 // ERROR
-// =====================================
+// ======================================
 
 function showError(
   element,
   text
 ) {
 
-  if (!element) return;
+  if (!element) {
+    return;
+  }
 
-  element.textContent = text;
+  element.textContent =
+    text;
 
   element.className =
     "message error";
 
-  element.hidden = false;
+  element.hidden =
+    false;
+
 }
 
 
-// =====================================
+// ======================================
 // PAY LOAN
-// =====================================
+// ======================================
 
 const paymentForm =
   document.getElementById(
     "paymentForm"
   );
+
 
 if (paymentForm) {
 
@@ -407,21 +468,31 @@ if (paymentForm) {
 
       event.preventDefault();
 
+
       const message =
         document.getElementById(
           "paymentMessage"
         );
 
-      if (!message) return;
+
+      if (!message) {
+        return;
+      }
+
 
       message.textContent =
         "Payment submitted for admin verification. " +
         "The loan will be marked Paid only after verification.";
 
+
       message.className =
         "message";
 
-      message.hidden = false;
+
+      message.hidden =
+        false;
+
     }
   );
+
 }
