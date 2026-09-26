@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Apply Loan | PautangMo</title><link rel="stylesheet" href="style.css"></head>
 <body><header class="topbar"><a class="brand" href="index.html">₱ PautangMo</a>
-<nav class="main-nav"><a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="admin-login.html">Admin</a></nav></header>
+<nav class="main-nav"><a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="login.html">Login</a><a href="register.html">Register</a><a href="admin-login.html">Admin</a></nav></header>
 <main class="shell"><section class="hero compact-hero"><div><p class="eyebrow">APPLY LOAN</p><h1>Apply for a <span>loan.</span></h1><p>20% interest is calculated automatically and the due date is 15 days from the application date.</p></div></section>
 <section class="panel"><form id="loanForm">
 <label>Borrower name<input id="name" required autocomplete="name" placeholder="Full name"></label>
@@ -20,6 +20,8 @@
 <button class="primary-btn" type="submit">Submit Application →</button><div id="message" class="message" hidden></div>
 </form></section><footer>© <span id="year"></span> PautangMo</footer></main>
 <script src="config.js"></script>
+<script src="firebase-config.js"></script>
+<script type="module">import {auth,onAuthStateChanged} from "./auth.js"; onAuthStateChanged(auth,user=>{if(!user){location.href="login.html?next=apply.html";}});</script>
 <script src="script.js"></script>
 <script>
 (function(){
