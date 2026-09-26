@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
   <meta charset="UTF-8">
@@ -17,34 +18,55 @@
 
 </head>
 
+
 <body>
+
+
+  <!-- NAVIGATION -->
 
   <header>
 
     <nav>
 
-      <a href="index.html">Home</a>
+      <a href="index.html">
+        Home
+      </a>
 
-      <a href="apply.html">Apply Loan</a>
+      <a href="apply.html">
+        Apply Loan
+      </a>
 
-      <a href="pay.html">Pay Loan</a>
+      <a href="pay.html">
+        Pay Loan
+      </a>
 
-      <a href="login.html">Login</a>
+      <a href="login.html">
+        Login
+      </a>
 
-      <a href="register.html">Register</a>
+      <a href="register.html">
+        Register
+      </a>
 
-      <a href="admin-login.html">Admin</a>
+      <a href="admin-login.html">
+        Admin
+      </a>
 
     </nav>
 
   </header>
 
 
+
+  <!-- LOGIN -->
+
   <main class="auth-container">
 
     <div class="auth-box">
 
-      <h1>Login</h1>
+      <h1>
+        Login
+      </h1>
 
       <p>
         Login to your PautangMo account.
@@ -53,14 +75,16 @@
 
       <form id="loginForm">
 
+
         <label for="email">
-          Email
+          Email Address
         </label>
 
         <input
           type="email"
           id="email"
           placeholder="Enter your email"
+          autocomplete="email"
           required
         >
 
@@ -73,18 +97,26 @@
           type="password"
           id="password"
           placeholder="Enter your password"
+          autocomplete="current-password"
           required
         >
 
 
-        <button type="submit">
+        <button
+          type="submit"
+          id="loginButton"
+        >
           Login
         </button>
+
 
       </form>
 
 
-      <p id="message"></p>
+      <p
+        id="message"
+        class="form-message"
+      ></p>
 
 
       <p class="auth-switch">
@@ -97,10 +129,14 @@
 
       </p>
 
+
     </div>
 
   </main>
 
+
+
+  <!-- LOGIN SCRIPT -->
 
   <script type="module">
 
@@ -114,15 +150,26 @@
     const form =
       document.getElementById("loginForm");
 
+
     const message =
       document.getElementById("message");
 
 
+    const button =
+      document.getElementById("loginButton");
+
+
+
     const params =
-      new URLSearchParams(location.search);
+      new URLSearchParams(
+        window.location.search
+      );
+
 
     const next =
-      params.get("next") || "apply.html";
+      params.get("next") ||
+      "apply.html";
+
 
 
     form.addEventListener(
@@ -147,7 +194,9 @@
 
         try {
 
-          message.textContent =
+          button.disabled = true;
+
+          button.textContent =
             "Logging in...";
 
 
@@ -163,35 +212,39 @@
             credential.user;
 
 
+
           /*
-           * REQUIRE EMAIL VERIFICATION
+           * EMAIL MUST BE VERIFIED
            */
 
           if (!user.emailVerified) {
 
             await signOut(auth);
 
+
             message.textContent =
-              "Please verify your email first.";
+              "Please verify your email first. " +
+              "Check your inbox.";
 
             return;
           }
 
 
+
           /*
-           * LOGIN SUCCESS
+           * SUCCESS
            */
 
-          location.href = next;
+          window.location.href =
+            next;
 
 
         } catch (error) {
 
-          console.error(error);
-
-
-          let errorMessage =
-            "Login failed.";
+          console.error(
+            "Login error:",
+            error
+          );
 
 
           if (
@@ -199,42 +252,53 @@
             "auth/invalid-credential"
           ) {
 
-            errorMessage =
+            message.textContent =
               "Incorrect email or password.";
+
 
           } else if (
             error.code ===
             "auth/user-not-found"
           ) {
 
-            errorMessage =
+            message.textContent =
               "Account not found.";
+
 
           } else if (
             error.code ===
             "auth/wrong-password"
           ) {
 
-            errorMessage =
+            message.textContent =
               "Incorrect password.";
 
-          } else if (error.message) {
 
-            errorMessage =
-              error.message;
+          } else {
+
+            message.textContent =
+              error.message ||
+              "Login failed.";
 
           }
 
 
-          message.textContent =
-            errorMessage;
+        } finally {
+
+          button.disabled = false;
+
+          button.textContent =
+            "Login";
 
         }
 
       }
+
     );
 
   </script>
 
+
 </body>
+
 </html>
