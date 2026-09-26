@@ -1,11 +1,273 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Register | PautangMo</title><link rel="stylesheet" href="style.css"><script src="firebase-config.js"></script></head>
-<body><main class="auth-shell"><section class="auth-card">
-<a class="brand" href="index.html">₱ PautangMo</a><p class="eyebrow">CREATE ACCOUNT</p><h1>Register.</h1><p>Create your borrower account before applying for a loan.</p>
-<form id="registerForm"><label>Full name<input id="name" type="text" autocomplete="name" required placeholder="Your full name"></label><label>Email<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Password<input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"></label><label>Confirm password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat your password"></label><button class="primary-btn" type="submit">Create Account →</button><div id="message" class="message" hidden></div></form>
-<p class="auth-switch">Already have an account? <a href="login.html">Login</a></p><a href="index.html">← Back to website</a>
-</section></main>
-<script type="module">import {auth,createUserWithEmailAndPassword,sendEmailVerification,updateProfile} from './auth.js';
-const form=document.getElementById('registerForm'),msg=document.getElementById('message');
-form.addEventListener('submit',async e=>{e.preventDefault();msg.hidden=true;const name=document.getElementById('name').value.trim(),email=document.getElementById('email').value.trim(),password=document.getElementById('password').value,confirm=document.getElementById('confirmPassword').value;if(password!==confirm){msg.textContent='Passwords do not match.';msg.className='message error';msg.hidden=false;return;}try{const c=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(c.user,{displayName:name});await sendEmailVerification(c.user);msg.textContent='Account created. Check your email and verify your account before logging in.';msg.className='message';msg.hidden=false;form.reset();}catch(err){msg.textContent=err.code==='auth/email-already-in-use'?'That email is already registered.':(err.message||'Registration failed.');msg.className='message error';msg.hidden=false;}});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Register - PautangMo</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="firebase-config.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="apply.html">Apply Loan</a>
+      <a href="pay.html">Pay Loan</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="admin-login.html">Admin</a>
+    </nav>
+  </header>
+
+  <main class="auth-container">
+
+    <div class="auth-box">
+
+      <h1>Create Account</h1>
+
+      <p>
+        Register your PautangMo account.
+      </p>
+
+      <form id="registerForm">
+
+        <label for="name">Full Name</label>
+
+        <input
+          type="text"
+          id="name"
+          placeholder="Enter your full name"
+          required
+        >
+
+        <label for="email">Email</label>
+
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          required
+        >
+
+        <label for="password">Password</label>
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter password"
+          minlength="6"
+          required
+        >
+
+        <label for="confirmPassword">Confirm Password</label>
+
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirm password"
+          minlength="6"
+          required
+        >
+
+        <button type="submit">
+          Register
+        </button>
+
+      </form>
+
+      <p id="message"></p>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+
+    </div>
+
+  </main>
+
+  <script type="module">
+
+    import {
+      auth,
+      db,
+      createUserWithEmailAndPassword,
+      sendEmailVerification,
+      updateProfile
+    } from "./auth.js";
+
+    import {
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    const form = document.getElementById("registerForm");
+
+    const message = document.getElementById("message");
+
+
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+      const name =
+        document.getElementById("name").value.trim();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+      message.textContent = "";
+
+
+      if (!name) {
+
+        message.textContent =
+          "Please enter your full name.";
+
+        return;
+      }
+
+
+      if (password !== confirmPassword) {
+
+        message.textContent =
+          "Passwords do not match.";
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        message.textContent =
+          "Password must be at least 6 characters.";
+
+        return;
+      }
+
+
+      try {
+
+        message.textContent =
+          "Creating account...";
+
+
+        /*
+         * CREATE FIREBASE AUTH ACCOUNT
+         */
+
+        const credential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+
+        const user = credential.user;
+
+
+        /*
+         * SAVE DISPLAY NAME
+         */
+
+        await updateProfile(user, {
+          displayName: name
+        });
+
+
+        /*
+         * CREATE FIRESTORE USER DOCUMENT
+         *
+         * users/{Firebase UID}
+         */
+
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            name: name,
+            email: user.email,
+            role: "client",
+            createdAt: serverTimestamp()
+          }
+        );
+
+
+        /*
+         * SEND EMAIL VERIFICATION
+         */
+
+        await sendEmailVerification(user);
+
+
+        message.textContent =
+          "Account created successfully! " +
+          "Please check your email and verify your account.";
+
+
+        form.reset();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        let errorMessage =
+          "Registration failed.";
+
+
+        if (error.code === "auth/email-already-in-use") {
+
+          errorMessage =
+            "This email is already registered.";
+
+        } else if (error.code === "auth/invalid-email") {
+
+          errorMessage =
+            "Invalid email address.";
+
+        } else if (error.code === "auth/weak-password") {
+
+          errorMessage =
+            "Password is too weak.";
+
+        } else if (
+          error.code === "permission-denied"
+        ) {
+
+          errorMessage =
+            "Firestore permission denied. Check your Firestore Rules.";
+
+        } else if (error.message) {
+
+          errorMessage =
+            error.message;
+
+        }
+
+
+        message.textContent =
+          errorMessage;
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>
