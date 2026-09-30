@@ -1,104 +1,57 @@
-import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
-
-function getDatabase() {
-  if (!getApps().length) {
-    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-    if (!raw) {
-      throw new Error("FIREBASE_SERVICE_ACCOUNT is not configured.");
-    }
-
-    initializeApp({
-      credential: cert(JSON.parse(raw))
-    });
-  }
-
-  return getFirestore();
-}
+import { getAdminAuth, getAdminDb, FieldValue } from "./_firebase.js";
 
 function getBearerToken(req) {
-  const header = req.headers.authorization || "";
-  if (!header.startsWith("Bearer ")) return null;
-  return header.slice(7).trim();
+  const header = req.headers?.authorization || "";
+  return header.startsWith("Bearer ") ? header.slice(7).trim() : null;
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      success: false,
-      message: "Method not allowed."
-    });
+    return res.status(405).json({ success: false, message: "Method not allowed." });
   }
 
   try {
     const token = getBearerToken(req);
-
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Authentication token is required."
-      });
+      return res.status(401).json({ success: false, message: "Authentication token is required." });
     }
 
-    if (!getApps().length) {
-      const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-      if (!raw) throw new Error("FIREBASE_SERVICE_ACCOUNT is not configured.");
-      initializeApp({ credential: cert(JSON.parse(raw)) });
-    }
-
-    const decoded = await getAuth().verifyIdToken(token);
-    const db = getDatabase();
-    const ref = db.collection("users").doc(decoded.uid);
-    const snapshot = await ref.get();
-    const body = req.body || {};
+    const decoded = await getAdminAuth().verifyIdToken(token);
+    const body = req.body && typeof req.body === "object" ? req.body : {};
     const name = String(body.name || decoded.name || "").trim();
     const email = String(body.email || decoded.email || "").trim().toLowerCase();
 
     if (!name || !email) {
-      return res.status(400).json({
-        success: false,
-        message: "Name and email are required."
-      });
+      return res.status(400).json({ success: false, message: "Name and email are required." });
     }
 
-    if (snapshot.exists) {
-      await ref.set(
-        {
-          name,
-          email,
-          updatedAt: FieldValue.serverTimestamp()
-        },
-        { merge: true }
-      );
-    } else {
-      await ref.set({
-        name,
-        email,
-        role: "client",
-        createdAt: FieldValue.serverTimestamp()
-      });
-    }
+    const db = getAdminDb();
+    const ref = db.collection("users").doc(decoded.uid);
+    const existing = await ref.get();
+    const existingRole = existing.exists ? (existing.data()?.role || "client") : "client";
+
+    const data = {
+      name,
+      email,
+      role: existingRole,
+      updatedAt: FieldValue.serverTimestamp()
+    };
+
+    if (!existing.exists) data.createdAt = FieldValue.serverTimestamp();
+
+    await ref.set(data, { merge: true });
 
     return res.status(200).json({
       success: true,
       uid: decoded.uid,
-      role: snapshot.exists ? snapshot.data().role || "client" : "client"
+      role: existingRole
     });
   } catch (error) {
     console.error("User profile error:", error);
-
-    const status =
-      error?.code === "auth/id-token-expired" ||
-      error?.code === "auth/argument-error"
-        ? 401
-        : 500;
-
-    return res.status(status).json({
+    const authError = String(error?.code || "").startsWith("auth/");
+    return res.status(authError ? 401 : 500).json({
       success: false,
-      message:
-        error?.message || "Unable to save the Firestore user profile."
+      message: error?.message || "Unable to save the Firestore user profile."
     });
   }
 }
