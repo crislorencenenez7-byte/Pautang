@@ -24,7 +24,7 @@ export function getFirebaseAdmin() {
     throw new Error(`Wrong Firebase project in FIREBASE_SERVICE_ACCOUNT: ${serviceAccount.project_id}. Expected pautangmo-f6fe0.`);
   }
 
-  return initializeApp({ credential: cert(serviceAccount) });
+  return initializeApp({ credential: cert(serviceAccount), storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "pautangmo-f6fe0.firebasestorage.app" });
 }
 
 export function getAdminAuth() {
