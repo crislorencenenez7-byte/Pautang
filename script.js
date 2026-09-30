@@ -1,4 +1,4 @@
-const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycbzbytHL3BGV02ca4nJczLwOs2rA9ur1Ny4z47V_iEOfcl2incLNVMsO3yC2ZL4rEwzi/exec";
+const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycbzUQKPJB2uf2gBNEAAzhlDfAj75BVp_U97RY-Y6yIxykEyCyg43EYkdVksfLyCPrVpB/exec";
 const amountInput=document.getElementById("amount"),totalPreview=document.getElementById("totalPreview");
 function money(n){return "₱"+Number(n||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function updateTotal(){if(amountInput&&totalPreview){const n=Number(amountInput.value)||0;totalPreview.textContent=money(n*1.2);}}
