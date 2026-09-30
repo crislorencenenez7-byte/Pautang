@@ -19,4 +19,10 @@ WORKFLOW
 7. Verify & Mark Paid -> loanApplications.status=Paid and borrower borrowingEnabled=true.
 8. Google Sheets remains a reporting copy of loan applications.
 
-For Firebase Storage, enable Cloud Storage in the Firebase project before using GCash proof uploads.
+Firebase Storage is NOT required in this version. GCash payment proof is sent to the existing Google Apps Script web app, saved in Google Drive, and only the Drive URL is stored in payApplications. See GOOGLE_APPS_SCRIPT_PAYMENT_PROOF.txt.
+
+
+Payment proof setup:
+- GOOGLE_SHEET_URL = your deployed Google Apps Script /exec URL.
+- Configure PAYMENT_PROOF_FOLDER_ID in Apps Script.
+- Redeploy the Apps Script after adding the payment-proof branch.

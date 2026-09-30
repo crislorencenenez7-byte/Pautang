@@ -1,0 +1,58 @@
+PAUTANGMO — GOOGLE DRIVE PAYMENT PROOF UPLOAD
+
+Why this exists:
+Firebase Storage is NOT used for payment screenshots in this version.
+The existing Google Apps Script web app receives the screenshot, saves it to Google Drive, and returns the file URL. Only that URL is stored in Firestore payApplications.
+
+IMPORTANT:
+Do not delete your existing doPost loan/Google Sheet logic. Add the uploadPaymentProof branch to your existing doPost(e), then deploy the Apps Script web app again as a Web app.
+
+1) Add this helper function to your Apps Script:
+
+function uploadPaymentProof_(payload) {
+  if (!payload || !payload.dataUrl) throw new Error('Missing proof image.');
+  var m = String(payload.dataUrl).match(/^data:(image\/[A-Za-z0-9.+-]+);base64,(.+)$/);
+  if (!m) throw new Error('Invalid image data.');
+  var mime = m[1];
+  var bytes = Utilities.base64Decode(m[2]);
+  if (bytes.length > 1900000) throw new Error('Proof image is too large.');
+  var name = String(payload.fileName || 'payment-proof.jpg').replace(/[^A-Za-z0-9._ -]/g, '_');
+  var folderId = PropertiesService.getScriptProperties().getProperty('PAYMENT_PROOF_FOLDER_ID');
+  if (!folderId) throw new Error('PAYMENT_PROOF_FOLDER_ID is not configured.');
+  var folder = DriveApp.getFolderById(folderId);
+  var file = folder.createFile(Utilities.newBlob(bytes, mime, name));
+  file.setDescription('PautangMo payment proof | loan: ' + String(payload.loanId || '') + ' | uid: ' + String(payload.uid || ''));
+  return {
+    success: true,
+    url: file.getUrl(),
+    fileId: file.getId(),
+    fileName: file.getName()
+  };
+}
+
+2) In your existing doPost(e), add this branch BEFORE your normal sheet/loan handling:
+
+var body = JSON.parse(e.postData.contents || '{}');
+if (body.action === 'uploadPaymentProof') {
+  try {
+    return ContentService.createTextOutput(JSON.stringify(uploadPaymentProof_(body)))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({success:false,error:String(err.message || err)}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+IMPORTANT: If your current doPost already parses e.postData.contents into a variable, reuse that variable instead of parsing it twice.
+
+3) Create a Google Drive folder for payment proofs.
+4) Apps Script → Project Settings → Script Properties → add:
+   PAYMENT_PROOF_FOLDER_ID = <the Drive folder ID>
+5) Deploy → Manage deployments → Edit → Web app.
+   Execute as: Me
+   Who has access: Anyone
+6) Use the same deployed /exec URL in Vercel:
+   GOOGLE_SHEET_URL = your Apps Script /exec URL
+
+Privacy:
+The returned Google Drive URL is stored in Firestore. Make sure the proof folder/file sharing is appropriate for your admin. Do not make payment proofs public unless you intentionally accept that risk.
