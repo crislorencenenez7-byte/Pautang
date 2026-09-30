@@ -110,12 +110,19 @@
         });
 
         // Every newly registered user is a client.
-        await setDoc(doc(db, "users", user.uid), {
-          name,
-          email: user.email,
-          role: "client",
-          createdAt: serverTimestamp()
-        });
+        try {
+          await setDoc(doc(db, "users", user.uid), {
+            name,
+            email: user.email,
+            role: "client",
+            createdAt: serverTimestamp()
+          });
+        } catch (firestoreError) {
+          console.error("Firestore profile creation failed:", firestoreError);
+          throw new Error(
+            `Account was created in Firebase Authentication, but the user profile could not be saved to Firestore. ${firestoreError.code || firestoreError.message}`
+          );
+        }
 
         // Send verification only once during registration.
         await sendEmailVerification(user);

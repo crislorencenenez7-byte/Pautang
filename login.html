@@ -40,10 +40,17 @@
   <script type="module">
     import {
       auth,
+      db,
       signInWithEmailAndPassword,
       sendEmailVerification,
       signOut
     } from "./auth.js";
+    import {
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
@@ -84,6 +91,29 @@
           await signOut(auth);
           showMessage("Please verify your email before logging in.", true);
           resendButton.hidden = false;
+          return;
+        }
+
+        // Make sure every authenticated client has a Firestore profile.
+        // Existing profiles are never overwritten, including admin roles.
+        try {
+          const profileRef = doc(db, "users", user.uid);
+          const profileSnap = await getDoc(profileRef);
+
+          if (!profileSnap.exists()) {
+            await setDoc(profileRef, {
+              name: user.displayName || "",
+              email: user.email || "",
+              role: "client",
+              createdAt: serverTimestamp()
+            });
+          }
+        } catch (firestoreError) {
+          console.error("Firestore profile check failed:", firestoreError);
+          showMessage(
+            `Login succeeded, but your user profile could not be saved to Firestore. ${firestoreError.code || firestoreError.message}`,
+            true
+          );
           return;
         }
 
