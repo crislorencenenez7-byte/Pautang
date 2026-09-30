@@ -1,24 +1,22 @@
-PAUTANGMO — VERCEL / FIREBASE SETUP
+PAUTANGMO VERCEL SETUP
 
-Firebase project used by this build:
-pautangmo-f6fe0
+Required environment variables:
+- FIREBASE_SERVICE_ACCOUNT = complete NEW Firebase service-account JSON from project pautangmo-f6fe0
+- RESEND_API_KEY = your Resend API key
+- MAIL_FROM = verified sender address allowed by Resend
+- ADMIN_EMAIL = email address that should receive new loan application notifications and may access admin by email
+- FIREBASE_STORAGE_BUCKET = optional; defaults to pautangmo-f6fe0.firebasestorage.app
 
-1. Vercel → Project → Settings → Environment Variables
+Never put the service-account private key or Resend API key in firebase-config.js or GitHub.
 
-Add:
-FIREBASE_SERVICE_ACCOUNT = the COMPLETE NEW service-account JSON from Firebase project pautangmo-f6fe0
-RESEND_API_KEY = your Resend API key
-MAIL_FROM = your verified Resend sender address
+WORKFLOW
+1. Register -> Firebase Authentication -> email verification -> users/{uid}.
+2. Apply Loan -> loanApplications/{loanId} and users/{uid}.loanActive=true / borrowingEnabled=false.
+3. The borrower cannot submit another loan while an Unpaid loan exists.
+4. Admin receives a Resend email containing the loanApplications data. No payment email is sent.
+5. Pay Loan -> payApplications/{payId}. GCash proof is stored in Firebase Storage; Hands-On has no screenshot requirement.
+6. Admin Dashboard reads both collections. Admin can verify/reject pending payments.
+7. Verify & Mark Paid -> loanApplications.status=Paid and borrower borrowingEnabled=true.
+8. Google Sheets remains a reporting copy of loan applications.
 
-Do NOT put the service-account JSON in firebase-config.js, GitHub, or this ZIP.
-
-2. Firebase Console → Authentication
-Enable Email/Password sign-in.
-
-3. Firebase Console → Firestore Database
-Create the database and publish firestore.rules from this project.
-
-4. After changing Vercel environment variables, Redeploy the project.
-
-IMPORTANT:
-The service account must belong to pautangmo-f6fe0. This build checks project_id server-side and returns a clear error if a service account from another Firebase project is used.
+For Firebase Storage, enable Cloud Storage in the Firebase project before using GCash proof uploads.
