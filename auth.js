@@ -6,14 +6,15 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
-  signOut
+  signOut,
+  reload
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const config = window.PAUTANG_FIREBASE_CONFIG;
 
-if (!config || !config.apiKey || !config.projectId) {
-  throw new Error("Firebase configuration is missing or incomplete.");
+if (!config || !config.apiKey) {
+  throw new Error("Firebase configuration is missing.");
 }
 
 const app = initializeApp(config);
@@ -27,5 +28,6 @@ export {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
-  signOut
+  signOut,
+  reload
 };
