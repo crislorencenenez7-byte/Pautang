@@ -3,43 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Register | PautangMo</title>
+  <meta name="theme-color" content="#0d0d0d">
+  <title>Create Account | PautangMo</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-card { max-width: 480px; }
+    .auth-card form { display: grid; gap: 14px; margin-top: 22px; }
+    .auth-card label { display: grid; gap: 7px; font-weight: 600; }
+    .auth-card input { width: 100%; box-sizing: border-box; }
+    .auth-status { min-height: 22px; margin-top: 4px; }
+    .primary-btn:disabled { opacity: .65; cursor: wait; }
+  </style>
 </head>
 <body>
   <main class="auth-shell">
     <section class="auth-card">
       <a class="brand" href="index.html">₱ PautangMo</a>
       <p class="eyebrow">CREATE ACCOUNT</p>
-      <h1>Join PautangMo</h1>
-      <p>Create your client account. Every new registration starts as a client.</p>
+      <h1>Join PautangMo.</h1>
+            <p class="auth-note">Secure account access powered by Firebase.</p>
+      <p>Create your account to start your application. New accounts are automatically registered as clients.</p>
 
-      <form id="registerForm">
-        <label>
-          Full Name
+      <form id="registerForm" novalidate>
+        <label for="name">Full Name
           <input id="name" type="text" autocomplete="name" required placeholder="Your full name">
         </label>
 
-        <label>
-          Email
+        <label for="email">Email
           <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
         </label>
 
-        <label>
-          Password
+        <label for="password">Password
           <input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters">
         </label>
 
-        <label>
-          Confirm Password
-          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat password">
+        <label for="confirmPassword">Confirm Password
+          <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat your password">
         </label>
 
         <button class="primary-btn" id="registerButton" type="submit">Create account →</button>
-        <div id="message" class="message" hidden></div>
+        <div id="message" class="message auth-status" hidden></div>
       </form>
 
-      <a href="login.html">Already have an account? Sign in →</a><br>
+      <p><a href="login.html">Already have an account? Sign in →</a></p>
       <a href="index.html">← Back to website</a>
     </section>
   </main>
@@ -65,8 +71,17 @@
 
     function showMessage(text, isError = false) {
       message.textContent = text;
-      message.className = isError ? "message error" : "message";
+      message.className = isError ? "message error auth-status" : "message auth-status";
       message.hidden = false;
+    }
+
+    function withTimeout(promise, ms, messageText) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(messageText)), ms);
+        })
+      ]);
     }
 
     form.addEventListener("submit", async (event) => {
@@ -78,72 +93,58 @@
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
 
-      if (!name) {
-        showMessage("Please enter your full name.", true);
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        showMessage("Passwords do not match.", true);
-        return;
-      }
-
-      if (password.length < 6) {
-        showMessage("Password must be at least 6 characters.", true);
-        return;
-      }
+      if (!name) return showMessage("Please enter your full name.", true);
+      if (!email) return showMessage("Please enter your email.", true);
+      if (password.length < 6) return showMessage("Password must be at least 6 characters.", true);
+      if (password !== confirmPassword) return showMessage("Passwords do not match.", true);
 
       registerButton.disabled = true;
-      registerButton.textContent = "Creating account...";
+      registerButton.textContent = "Creating account…";
 
       try {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
+        const credential = await withTimeout(
+          createUserWithEmailAndPassword(auth, email, password),
+          15000,
+          "Firebase took too long to respond. Check your internet connection and try again."
         );
 
         const user = credential.user;
 
-        await updateProfile(user, {
-          displayName: name
-        });
+        await withTimeout(
+          updateProfile(user, { displayName: name }),
+          10000,
+          "Could not save your profile name. Please try again."
+        );
 
-        // Every newly registered user is a client.
-        try {
-          await setDoc(doc(db, "users", user.uid), {
+        await withTimeout(
+          setDoc(doc(db, "users", user.uid), {
             name,
             email: user.email,
             role: "client",
             createdAt: serverTimestamp()
-          });
-        } catch (firestoreError) {
-          console.error("Firestore profile creation failed:", firestoreError);
-          throw new Error(
-            `Account was created in Firebase Authentication, but the user profile could not be saved to Firestore. ${firestoreError.code || firestoreError.message}`
-          );
-        }
-
-        // Send verification only once during registration.
-        await sendEmailVerification(user);
-
-        showMessage(
-          "Account created! Check your email and verify your account."
+          }),
+          15000,
+          "Account was created, but saving your Firestore profile timed out. Check your Firestore rules."
         );
+
+        await withTimeout(
+          sendEmailVerification(user),
+          15000,
+          "Account was created, but sending the verification email timed out."
+        );
+
+        showMessage("Account created successfully! Check your email to verify your account.");
         form.reset();
       } catch (error) {
-        console.error(error);
+        console.error("Registration error:", error);
 
+        const code = error.code || "";
         const errorMessage =
-          error.code === "auth/email-already-in-use"
-            ? "This email is already registered. Please use Login instead."
-            : error.code === "auth/invalid-email"
-              ? "Invalid email address."
-              : error.code === "auth/weak-password"
-                ? "Password must be at least 6 characters."
-                : error.code === "permission-denied"
-                  ? "Firestore permission denied. Publish the Firestore rules."
-                  : error.message || "Registration failed.";
+          code === "auth/email-already-in-use" ? "This email is already registered. Please use Login instead." :
+          code === "auth/invalid-email" ? "Invalid email address." :
+          code === "auth/weak-password" ? "Password must be at least 6 characters." :
+          code === "permission-denied" || code === "firestore/permission-denied" ? "Firestore denied the users document. Publish your Firestore rules." :
+          error.message || "Registration failed.";
 
         showMessage(errorMessage, true);
       } finally {

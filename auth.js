@@ -1,6 +1,4 @@
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
@@ -10,14 +8,12 @@ import {
   updateProfile,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import {
-  getFirestore
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const config = window.PAUTANG_FIREBASE_CONFIG;
 
-if (!config || !config.apiKey) {
-  throw new Error("Firebase configuration is missing.");
+if (!config || !config.apiKey || !config.projectId) {
+  throw new Error("Firebase configuration is missing or incomplete.");
 }
 
 const app = initializeApp(config);

@@ -3,35 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0d0d">
   <title>Login | PautangMo</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-card { max-width: 480px; }
+    .auth-card form { display: grid; gap: 14px; margin-top: 22px; }
+    .auth-card label { display: grid; gap: 7px; font-weight: 600; }
+    .auth-card input { width: 100%; box-sizing: border-box; }
+    .auth-status { min-height: 22px; margin-top: 4px; }
+    .primary-btn:disabled { opacity: .65; cursor: wait; }
+    .secondary-btn { width: 100%; margin-top: 8px; }
+  </style>
 </head>
 <body>
   <main class="auth-shell">
     <section class="auth-card">
       <a class="brand" href="index.html">₱ PautangMo</a>
       <p class="eyebrow">CLIENT ACCESS</p>
-      <h1>Sign in to PautangMo</h1>
-      <p>Login to your account to continue to your loan application.</p>
+      <h1>Welcome back.</h1>
+            <p class="auth-note">Secure account access powered by Firebase.</p>
+      <p>Sign in to continue to your PautangMo account.</p>
 
-      <form id="loginForm">
-        <label>
-          Email
+      <form id="loginForm" novalidate>
+        <label for="email">Email
           <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
         </label>
 
-        <label>
-          Password
-          <input id="password" type="password" autocomplete="current-password" required placeholder="Password">
+        <label for="password">Password
+          <input id="password" type="password" autocomplete="current-password" required placeholder="Your password">
         </label>
 
         <button class="primary-btn" id="loginButton" type="submit">Sign in →</button>
-        <button class="primary-btn" id="resendButton" type="button" hidden>Resend verification email</button>
-
-        <div id="message" class="message" hidden></div>
+        <button class="primary-btn secondary-btn" id="resendButton" type="button" hidden>Resend verification email</button>
+        <div id="message" class="message auth-status" hidden></div>
       </form>
 
-      <a href="register.html">Create a new account →</a><br>
+      <p><a href="register.html">Create a new account →</a></p>
       <a href="index.html">← Back to website</a>
     </section>
   </main>
@@ -40,17 +48,10 @@
   <script type="module">
     import {
       auth,
-      db,
       signInWithEmailAndPassword,
       sendEmailVerification,
       signOut
     } from "./auth.js";
-    import {
-      doc,
-      getDoc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
@@ -58,14 +59,22 @@
     const message = document.getElementById("message");
     const loginButton = document.getElementById("loginButton");
     const resendButton = document.getElementById("resendButton");
-
     const next = new URLSearchParams(location.search).get("next") || "apply.html";
     let unverifiedUser = null;
 
     function showMessage(text, isError = false) {
       message.textContent = text;
-      message.className = isError ? "message error" : "message";
+      message.className = isError ? "message error auth-status" : "message auth-status";
       message.hidden = false;
+    }
+
+    function withTimeout(promise, ms, messageText) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(messageText)), ms);
+        })
+      ]);
     }
 
     form.addEventListener("submit", async (event) => {
@@ -74,18 +83,27 @@
       resendButton.hidden = true;
       unverifiedUser = null;
       loginButton.disabled = true;
-      loginButton.textContent = "Signing in...";
+      loginButton.textContent = "Signing in…";
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showMessage("Enter your email and password.", true);
+        loginButton.disabled = false;
+        loginButton.textContent = "Sign in →";
+        return;
+      }
 
       try {
-        const credential = await signInWithEmailAndPassword(
-          auth,
-          emailInput.value.trim(),
-          passwordInput.value
+        const credential = await withTimeout(
+          signInWithEmailAndPassword(auth, email, password),
+          15000,
+          "Firebase took too long to respond. Check your internet connection and try again."
         );
 
         const user = credential.user;
 
-        // A verified account is NOT sent another verification email.
         if (!user.emailVerified) {
           unverifiedUser = user;
           await signOut(auth);
@@ -94,54 +112,30 @@
           return;
         }
 
-        // Make sure every authenticated client has a Firestore profile.
-        // Existing profiles are never overwritten, including admin roles.
-        try {
-          const profileRef = doc(db, "users", user.uid);
-          const profileSnap = await getDoc(profileRef);
+        showMessage("Login successful. Redirecting…");
 
-          if (!profileSnap.exists()) {
-            await setDoc(profileRef, {
-              name: user.displayName || "",
-              email: user.email || "",
-              role: "client",
-              createdAt: serverTimestamp()
-            });
-          }
-        } catch (firestoreError) {
-          console.error("Firestore profile check failed:", firestoreError);
-          showMessage(
-            `Login succeeded, but your user profile could not be saved to Firestore. ${firestoreError.code || firestoreError.message}`,
-            true
-          );
-          return;
-        }
+        // Do not block login on the optional notification email.
+        fetch("/api/login-notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.displayName || "PautangMo Client"
+          })
+        }).catch((error) => console.warn("Login notification failed:", error));
 
-        // Send the login notification through the server only.
-        // The email-service API key must never be placed in this HTML file.
-        try {
-          await fetch("/api/login-notify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.displayName || "PautangMo Client"
-            })
-          });
-        } catch (notifyError) {
-          console.warn("Login notification could not be sent:", notifyError);
-        }
-
-        location.href = next;
+        setTimeout(() => {
+          location.href = next;
+        }, 250);
       } catch (error) {
-        console.error(error);
+        console.error("Login error:", error);
 
+        const code = error.code || "";
         const errorMessage =
-          error.code === "auth/invalid-credential"
-            ? "Incorrect email or password."
-            : error.code === "auth/too-many-requests"
-              ? "Too many attempts. Please wait and try again."
-              : error.message || "Login failed.";
+          code === "auth/invalid-credential" ? "Incorrect email or password." :
+          code === "auth/invalid-email" ? "Please enter a valid email address." :
+          code === "auth/too-many-requests" ? "Too many attempts. Please wait and try again." :
+          error.message || "Login failed.";
 
         showMessage(errorMessage, true);
       } finally {
@@ -151,16 +145,16 @@
     });
 
     resendButton.addEventListener("click", async () => {
-      if (!unverifiedUser) {
-        showMessage("Please sign in first with an unverified account.", true);
-        return;
-      }
-
+      if (!unverifiedUser) return;
       resendButton.disabled = true;
-      resendButton.textContent = "Sending...";
+      resendButton.textContent = "Sending…";
 
       try {
-        await sendEmailVerification(unverifiedUser);
+        await withTimeout(
+          sendEmailVerification(unverifiedUser),
+          15000,
+          "The verification request timed out. Please try again."
+        );
         showMessage("Verification email sent. Check your inbox.");
       } catch (error) {
         console.error(error);

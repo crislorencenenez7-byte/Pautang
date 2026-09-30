@@ -1,29 +1,12 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-
     match /users/{userId} {
-      // A newly authenticated user may create only their own client profile.
-      allow create: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.role == "client";
-
-      // Clients may read their own profile.
-      allow read: if request.auth != null
-        && request.auth.uid == userId;
-
-      // Users may update their profile but cannot change their role.
-      allow update: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.role == resource.data.role;
-
+      allow create: if request.auth != null && request.auth.uid == userId && request.resource.data.role == "client";
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId && request.resource.data.role == resource.data.role;
       allow delete: if false;
     }
-
-    // Deny all other collections until their rules are explicitly added.
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }
