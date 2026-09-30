@@ -31,3 +31,6 @@ export {
   signOut,
   getIdToken
 };
+
+window.PAUTANG_AUTH = auth;
+window.PAUTANG_GET_ID_TOKEN = getIdToken;

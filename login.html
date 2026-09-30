@@ -113,8 +113,10 @@
         // Keep the user's Firestore profile healthy if an older account is missing one.
         try {
           const token = await getIdToken(user, true);
-          await withTimeout(
-            fetch("/api/user-profile", {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 7000);
+          try {
+            await fetch("/api/user-profile", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -123,11 +125,12 @@
               body: JSON.stringify({
                 name: user.displayName || "PautangMo Client",
                 email: user.email
-              })
-            }),
-            8000,
-            "Profile sync timed out."
-          );
+              }),
+              signal: controller.signal
+            });
+          } finally {
+            clearTimeout(timer);
+          }
         } catch (profileError) {
           console.warn("Profile sync skipped:", profileError);
         }
@@ -165,5 +168,6 @@
       }
     });
   </script>
+<script src="ui.js"></script>
 </body>
 </html>

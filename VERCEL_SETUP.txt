@@ -1,0 +1,24 @@
+PAUTANGMO — VERCEL / FIREBASE SETUP
+
+Firebase project used by this build:
+pautangmo-f6fe0
+
+1. Vercel → Project → Settings → Environment Variables
+
+Add:
+FIREBASE_SERVICE_ACCOUNT = the COMPLETE NEW service-account JSON from Firebase project pautangmo-f6fe0
+RESEND_API_KEY = your Resend API key
+MAIL_FROM = your verified Resend sender address
+
+Do NOT put the service-account JSON in firebase-config.js, GitHub, or this ZIP.
+
+2. Firebase Console → Authentication
+Enable Email/Password sign-in.
+
+3. Firebase Console → Firestore Database
+Create the database and publish firestore.rules from this project.
+
+4. After changing Vercel environment variables, Redeploy the project.
+
+IMPORTANT:
+The service account must belong to pautangmo-f6fe0. This build checks project_id server-side and returns a clear error if a service account from another Firebase project is used.

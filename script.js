@@ -340,64 +340,48 @@ if (loanForm) {
 
 
       // ================================
-      // SEND TO GOOGLE SHEETS
+      // SAVE TO FIRESTORE FIRST
       // ================================
 
       try {
+        const auth = window.PAUTANG_AUTH;
+        const getIdToken = window.PAUTANG_GET_ID_TOKEN;
+        const user = auth?.currentUser;
+        if (!user || !getIdToken) {
+          throw new Error("Your session expired. Please sign in again.");
+        }
 
-        await fetch(
-          GOOGLE_SHEET_URL,
-          {
+        const token = await getIdToken(user, true);
+        const response = await fetch("/api/apply", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
 
-            method: "POST",
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || "Unable to save the loan application.");
+        }
 
-            mode: "no-cors",
-
-            headers: {
-
-              "Content-Type":
-                "text/plain;charset=utf-8"
-
-            },
-
-            body:
-              JSON.stringify(data)
-
-          }
-        );
-
-
-        // ============================
-        // SUCCESS
-        // ============================
+        // Google Sheets remains a reporting copy. no-cors cannot expose its response.
+        fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ ...data, reference: result.reference, totalAmount: result.totalAmount, dueDate: result.due_date })
+        }).catch(sheetError => console.warn("Google Sheets copy failed:", sheetError));
 
         if (message) {
-
-          message.textContent =
-            "Application recorded successfully! " +
-            "20% interest applied. " +
-            "Due Date: 15 days from today. " +
-            "Status: Unpaid.";
-
+          message.textContent = `Application recorded! Reference: ${result.reference}. Total to repay: ₱${Number(result.totalAmount).toLocaleString("en-PH", {minimumFractionDigits:2, maximumFractionDigits:2})}. Due: ${result.due_date}.`;
           message.hidden = false;
-
         }
-
 
         loanForm.reset();
-
-
         updateReleaseMethod();
-
-
-        if (totalPreview) {
-
-          totalPreview.textContent =
-            "₱0.00";
-
-        }
-
-
+        if (totalPreview) totalPreview.textContent = "₱0.00";
       } catch (error) {
 
         console.error(
@@ -408,7 +392,7 @@ if (loanForm) {
 
         showError(
           message,
-          "Failed to submit application. Please try again."
+          error?.message || "Failed to submit application. Please try again."
         );
 
       } finally {

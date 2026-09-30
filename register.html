@@ -124,49 +124,31 @@
         await updateProfile(user, { displayName: name });
 
         let profileSaved = false;
-        let profileError = null;
 
         try {
           const token = await getIdToken(user, true);
-          const response = await withTimeout(
-            fetch("/api/user-profile", {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 12000);
+          try {
+            const response = await fetch("/api/user-profile", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
               },
-              body: JSON.stringify({ name, email })
-            }),
-            12000,
-            "Profile server timed out."
-          );
-
-          const result = await response.json().catch(() => ({}));
-          if (!response.ok || !result.success) {
-            throw new Error(result.message || "The server could not save your profile.");
-          }
-          profileSaved = true;
-        } catch (serverError) {
-          profileError = serverError;
-
-          // Fallback: save directly from the authenticated client.
-          try {
-            const { doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js");
-            const { db } = await import("./auth.js");
-            await withTimeout(
-              setDoc(doc(db, "users", user.uid), {
-                name,
-                email: user.email,
-                role: "client",
-                createdAt: serverTimestamp()
-              }, { merge: true }),
-              10000,
-              "Firestore profile save timed out."
-            );
+              body: JSON.stringify({ name, email }),
+              signal: controller.signal
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.success) {
+              throw new Error(result.message || "The server could not save your profile.");
+            }
             profileSaved = true;
-          } catch (directError) {
-            profileError = directError;
+          } finally {
+            clearTimeout(timer);
           }
+        } catch (serverError) {
+          console.error("Profile save failed:", serverError);
         }
 
         // Verification is sent only after registration. A verified account will not be sent this again by login.
@@ -179,8 +161,7 @@
         if (profileSaved) {
           showMessage("Account created! We sent a verification link to your email. Verify it, then use Sign In.");
         } else {
-          console.error("Profile save failed after both server and client attempts:", profileError);
-          showMessage("Account created and verification email sent, but your database profile could not be saved. Check Vercel FIREBASE_SERVICE_ACCOUNT and Firestore Rules.", "error");
+          showMessage("Account created and verification email sent, but the server could not save your profile. Check the Vercel FIREBASE_SERVICE_ACCOUNT for pautangmo-f6fe0.", "error");
         }
       } catch (error) {
         console.error("Registration error:", error);
@@ -202,5 +183,6 @@
       }
     });
   </script>
+<script src="ui.js"></script>
 </body>
 </html>

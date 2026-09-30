@@ -69,23 +69,7 @@
     <footer>© <span id="year"></span> PautangMo · Simple loan management</footer>
   </main>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
 
-    const nav = document.querySelector(".main-nav");
-    const bar = document.querySelector(".topbar");
-    if (nav && bar) {
-      const btn = document.createElement("button");
-      btn.className = "mobile-nav-toggle";
-      btn.type = "button";
-      btn.setAttribute("aria-label", "Open navigation");
-      btn.textContent = "☰";
-      bar.insertBefore(btn, nav);
-      btn.addEventListener("click", () => {
-        nav.classList.toggle("open");
-        btn.textContent = nav.classList.contains("open") ? "✕" : "☰";
-      });
-    }
-  </script>
+<script src="ui.js"></script>
 </body>
 </html>

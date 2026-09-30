@@ -1,5 +1,5 @@
-// Fill this with your Firebase Web App configuration.
-// Do not put service-account credentials here.
+// Firebase Web App configuration for PautangMo.
+// This is client-side configuration; NEVER put a service-account private key here.
 window.PAUTANG_FIREBASE_CONFIG = {
   apiKey: "AIzaSyDe2KScRGIK6JWEuJMPzobfrgNVyHJrENY",
   authDomain: "pautangmo-f6fe0.firebaseapp.com",
