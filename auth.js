@@ -7,7 +7,7 @@ import {
   sendEmailVerification,
   updateProfile,
   signOut,
-  reload
+  getIdToken
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -29,5 +29,5 @@ export {
   sendEmailVerification,
   updateProfile,
   signOut,
-  reload
+  getIdToken
 };

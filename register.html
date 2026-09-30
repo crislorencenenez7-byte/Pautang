@@ -2,129 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b1711">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1f16">
   <title>Create account | PautangMo</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .auth-page{position:relative;min-height:100svh;overflow:hidden;background:#f5faf7}
-    .auth-page::before,.auth-page::after{content:"";position:absolute;border-radius:999px;pointer-events:none;animation:authFloat 9s ease-in-out infinite}
-    .auth-page::before{width:390px;height:390px;right:-150px;top:-140px;background:radial-gradient(circle,#5ee69a 0,rgba(94,230,154,.15) 46%,transparent 72%)}
-    .auth-page::after{width:330px;height:330px;left:-150px;bottom:-120px;background:radial-gradient(circle,#9ee7bc 0,rgba(158,231,188,.16) 48%,transparent 72%);animation-delay:-4s}
-    .auth-stage{position:relative;z-index:1;width:min(1100px,calc(100% - 32px));min-height:100svh;margin:auto;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.75fr);gap:70px;align-items:center;padding:38px 0}
-    .auth-showcase{color:#10231a;animation:authReveal .65s ease both}
-    .auth-logo{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:950;font-size:22px;letter-spacing:-.04em;color:#10231a}.auth-logo-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#10231a;color:#72e9a4;box-shadow:0 12px 30px rgba(16,35,26,.18)}
-    .auth-showcase .eyebrow{margin-top:54px;color:#1a8c55;opacity:1}.auth-showcase h1{max-width:650px;margin:0;font-size:clamp(42px,6vw,76px);line-height:.96;letter-spacing:-.065em}.auth-showcase h1 span{display:block;color:#17965a}.auth-showcase>p:not(.eyebrow){max-width:560px;margin:24px 0 0;color:#607269;font-size:17px;line-height:1.7}
-    .auth-benefits{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.auth-chip{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #dce9e1;border-radius:999px;background:rgba(255,255,255,.72);box-shadow:0 8px 24px rgba(18,54,35,.05);font-size:13px;font-weight:850;color:#2d473a}.auth-chip i{width:7px;height:7px;border-radius:50%;background:#2fc978;box-shadow:0 0 0 5px rgba(47,201,120,.12)}
-    .auth-visual{position:relative;width:min(390px,90%);height:205px;margin-top:42px;border-radius:28px;background:linear-gradient(145deg,#10281b,#1b6942);box-shadow:0 28px 70px rgba(15,54,33,.22);overflow:hidden;transform:rotate(-2deg);animation:authCardFloat 6s ease-in-out infinite}.auth-visual::after{content:"";position:absolute;width:180px;height:180px;right:-50px;bottom:-90px;border-radius:50%;border:1px solid rgba(255,255,255,.16);box-shadow:0 0 0 30px rgba(255,255,255,.03),0 0 0 60px rgba(255,255,255,.025)}.auth-visual-content{position:relative;z-index:2;padding:25px;color:#fff}.auth-visual-content small{color:rgba(255,255,255,.62);font-weight:800}.auth-visual-content strong{display:block;margin-top:8px;font-size:32px;letter-spacing:-.04em}.auth-visual-line{width:180px;height:7px;margin-top:22px;border-radius:99px;background:rgba(255,255,255,.13);overflow:hidden}.auth-visual-line span{display:block;width:65%;height:100%;border-radius:inherit;background:#59e49a;animation:authProgress 3s ease-in-out infinite}
-    .auth-card-premium{position:relative;width:100%;max-width:430px;margin-left:auto;padding:34px;border:1px solid rgba(210,225,216,.9);border-radius:30px;background:rgba(255,255,255,.92);box-shadow:0 30px 80px rgba(19,48,33,.14),0 5px 18px rgba(19,48,33,.05);backdrop-filter:blur(18px);animation:authReveal .65s .08s ease both}.auth-card-premium::before{content:"";position:absolute;left:28px;right:28px;top:0;height:4px;border-radius:0 0 10px 10px;background:linear-gradient(90deg,#16834b,#56d88f,#16834b);background-size:200% 100%;animation:authShimmer 3s linear infinite}.auth-card-premium .card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}.mini-brand{font-weight:950;letter-spacing:-.04em;color:#17372a}.mini-brand span{color:#159354}.secure-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:#edf9f2;color:#147444;font-size:11px;font-weight:900}.secure-dot{width:6px;height:6px;border-radius:50%;background:#29bf70;box-shadow:0 0 0 4px rgba(41,191,112,.12)}
-    .auth-card-premium h2{margin:0;font-size:31px;letter-spacing:-.05em}.auth-card-premium .lead{margin:9px 0 25px;color:#718078;font-size:14px;line-height:1.55}.field{position:relative;margin-bottom:15px}.field label{display:flex;justify-content:space-between;align-items:center;margin:0 0 7px;color:#30473b;font-size:12px;font-weight:900}.field-wrap{position:relative}.field input{margin:0;width:100%;height:50px;padding:0 15px;border:1px solid #d8e3dc;border-radius:14px;background:#fbfdfc;transition:border-color .2s,box-shadow .2s,transform .2s}.field input:hover{border-color:#b9cec1}.field input:focus{border-color:#38bb75;box-shadow:0 0 0 4px rgba(56,187,117,.12);transform:translateY(-1px)}
-    .password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#718078;padding:8px;border-radius:9px;cursor:pointer;font-weight:800}.password-toggle:hover{background:#edf5f0;color:#147444}.auth-submit{position:relative;width:100%;height:52px;margin-top:5px;border:0;border-radius:15px;background:linear-gradient(135deg,#35bd73,#1c9c59);color:#062713;font:inherit;font-weight:950;cursor:pointer;box-shadow:0 12px 25px rgba(34,176,101,.24);overflow:hidden;transition:transform .2s,box-shadow .2s,filter .2s}.auth-submit::after{content:"";position:absolute;top:0;left:-80%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-20deg);transition:left .5s}.auth-submit:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(34,176,101,.3)}.auth-submit:hover::after{left:130%}.auth-submit:disabled{cursor:wait;opacity:.82;transform:none}.btn-inner{display:inline-flex;align-items:center;justify-content:center;gap:9px}.spinner{width:17px;height:17px;border:2px solid rgba(6,39,19,.25);border-top-color:#062713;border-radius:50%;animation:spin .7s linear infinite}.auth-message{display:flex;align-items:flex-start;gap:9px;margin-top:14px;padding:12px 13px;border-radius:13px;background:#effaf3;color:#116d3e;font-size:13px;font-weight:750;line-height:1.45;animation:authMessage .25s ease both}.auth-message.error{background:#fff1f1;color:#a52020}.auth-message::before{content:"✓";flex:0 0 auto;font-weight:1000}.auth-message.error::before{content:"!"}.auth-links{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:19px;padding-top:18px;border-top:1px solid #edf1ee;font-size:13px}.auth-links a{color:#26734e;text-decoration:none;font-weight:900}.auth-links a:hover{text-decoration:underline}.auth-footnote{margin:18px 0 0;color:#8a958f;font-size:11px;line-height:1.5;text-align:center}
-    .password-strength{height:5px;margin-top:8px;border-radius:99px;background:#edf1ee;overflow:hidden}.password-strength span{display:block;width:0;height:100%;border-radius:inherit;background:#35bd73;transition:width .25s,background .25s}.password-hint{display:block;margin-top:6px;color:#8a958f;font-size:11px}
-    @keyframes authReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}@keyframes authFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,14px,0)}}@keyframes authCardFloat{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-8px)}}@keyframes authShimmer{to{background-position:200% 0}}@keyframes authProgress{0%,100%{width:35%}50%{width:82%}}@keyframes authMessage{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:850px){.auth-stage{grid-template-columns:1fr;gap:20px;padding:25px 0 32px}.auth-showcase{display:none}.auth-card-premium{margin:auto;max-width:460px}.auth-page{background:linear-gradient(160deg,#eef8f2,#f8fbf9 55%,#edf7f1)}}
-    @media(max-width:480px){.auth-stage{width:min(100% - 22px,460px)}.auth-card-premium{padding:27px 20px;border-radius:24px}.auth-card-premium::before{left:20px;right:20px}.auth-card-premium h2{font-size:28px}.secure-pill{font-size:10px}.auth-links{font-size:12px}.auth-card-premium .card-top{margin-bottom:22px}}
-    @media(prefers-reduced-motion:reduce){.auth-page::before,.auth-page::after,.auth-visual,.auth-card-premium,.auth-submit::after,.auth-visual-line span{animation:none!important}}
-  </style>
 </head>
-<body>
-  <main class="auth-page">
-    <div class="auth-stage">
-      <section class="auth-showcase" aria-hidden="true">
-        <a class="auth-logo" href="index.html"><span class="auth-logo-mark">₱</span>PautangMo</a>
-        <p class="eyebrow">WELCOME TO PAUTANGMO</p>
-        <h1>Start simple.<span>Move forward.</span></h1>
-        <p>Create your account and keep your PautangMo application in one secure place. New accounts automatically start as clients.</p>
-        <div class="auth-benefits"><span class="auth-chip"><i></i> Client account</span><span class="auth-chip"><i></i> Email verification</span><span class="auth-chip"><i></i> Secure sign-in</span></div>
-        <div class="auth-visual"><div class="auth-visual-content"><small>NEW CLIENT</small><strong>Your journey starts here.</strong><div class="auth-visual-line"><span></span></div></div></div>
-      </section>
+<body class="auth-page">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
 
-      <section class="auth-card-premium">
-        <div class="card-top"><div class="mini-brand"><span>₱</span> PautangMo</div><span class="secure-pill"><i class="secure-dot"></i> Secure</span></div>
-        <p class="eyebrow">CREATE ACCOUNT</p>
-        <h2>Join PautangMo.</h2>
-        <p class="lead">Create your client account. We’ll send a verification email after registration.</p>
+  <main class="auth-shell">
+    <section class="auth-card auth-card-wide">
+      <div class="auth-brand-row">
+        <a class="brand brand-mark" href="index.html"><span>₱</span> PautangMo</a>
+        <span class="secure-pill">● Secure</span>
+      </div>
 
-        <form id="registerForm" novalidate>
-          <div class="field"><label for="name">Full name</label><div class="field-wrap"><input id="name" type="text" autocomplete="name" required placeholder="Your full name"></div></div>
-          <div class="field"><label for="email">Email</label><div class="field-wrap"><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></div></div>
-          <div class="field">
-            <label for="password">Password</label>
-            <div class="field-wrap"><input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"><button class="password-toggle" id="togglePassword" type="button">Show</button></div>
-            <div class="password-strength"><span id="strengthBar"></span></div><span class="password-hint" id="strengthHint">Use 6+ characters.</span>
+      <div class="auth-grid">
+        <div class="auth-copy">
+          <p class="eyebrow">CREATE YOUR ACCOUNT</p>
+          <h1>Start your <span>PautangMo</span> journey.</h1>
+          <p class="auth-lead">Create one secure client account to manage your loan application and payments in one place.</p>
+
+          <div class="benefit-list">
+            <div class="benefit-item"><span>✓</span><div><b>Client by default</b><small>Every new account starts with the client role.</small></div></div>
+            <div class="benefit-item"><span>✦</span><div><b>Email verification</b><small>Verify your email before signing in.</small></div></div>
+            <div class="benefit-item"><span>↗</span><div><b>Mobile-first</b><small>Designed to work smoothly on your phone.</small></div></div>
           </div>
-          <div class="field"><label for="confirmPassword">Confirm password</label><div class="field-wrap"><input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat your password"></div></div>
+        </div>
 
-          <button class="auth-submit" id="registerButton" type="submit"><span class="btn-inner"><span id="registerButtonText">Create account</span><span id="registerSpinner" class="spinner" hidden></span><span id="registerArrow">→</span></span></button>
-          <div id="message" class="auth-message" hidden></div>
-        </form>
+        <div class="auth-form-panel">
+          <div class="form-heading">
+            <h2>Create account</h2>
+            <p>It only takes a minute.</p>
+          </div>
 
-        <div class="auth-links"><a href="login.html">Already have an account? <strong>Sign in</strong> →</a><a href="index.html">Back to website</a></div>
-        <p class="auth-footnote">New accounts are registered as <strong>client</strong>. Never share your password.</p>
-      </section>
-    </div>
+          <form id="registerForm" novalidate>
+            <label>Full Name<input id="name" type="text" autocomplete="name" required placeholder="Juan Dela Cruz"></label>
+            <label>Email<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+            <label>Password<input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"><span id="passwordHint" class="field-hint">Use at least 6 characters.</span></label>
+            <label>Confirm Password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Repeat your password"></label>
+
+            <button class="primary-btn auth-submit" id="registerButton" type="submit"><span>Create account</span><b>→</b></button>
+            <div id="message" class="message" hidden></div>
+          </form>
+
+          <div class="auth-switch-card">
+            <span>Already have an account?</span>
+            <a class="secondary-auth-btn" href="login.html">Sign In <b>→</b></a>
+          </div>
+          <a class="back-link" href="index.html">← Back to PautangMo</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="firebase-config.js"></script>
   <script type="module">
     import {
       auth,
-      db,
       createUserWithEmailAndPassword,
       sendEmailVerification,
-      updateProfile
+      updateProfile,
+      getIdToken
     } from "./auth.js";
-    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     const form = document.getElementById("registerForm");
     const message = document.getElementById("message");
-    const button = document.getElementById("registerButton");
-    const buttonText = document.getElementById("registerButtonText");
-    const spinner = document.getElementById("registerSpinner");
-    const arrow = document.getElementById("registerArrow");
-    const password = document.getElementById("password");
-    const confirmPassword = document.getElementById("confirmPassword");
-    const togglePassword = document.getElementById("togglePassword");
-    const strengthBar = document.getElementById("strengthBar");
-    const strengthHint = document.getElementById("strengthHint");
+    const registerButton = document.getElementById("registerButton");
+    const passwordInput = document.getElementById("password");
+    const passwordHint = document.getElementById("passwordHint");
 
-    function showMessage(text, isError = false) {
+    function showMessage(text, type = "success") {
       message.textContent = text;
-      message.className = isError ? "auth-message error" : "auth-message";
+      message.className = `message ${type}`;
       message.hidden = false;
-    }
-
-    function setLoading(loading) {
-      button.disabled = loading;
-      buttonText.textContent = loading ? "Creating account…" : "Create account";
-      spinner.hidden = !loading;
-      arrow.hidden = loading;
     }
 
     function withTimeout(promise, ms, label) {
       return Promise.race([
         promise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error(label)), ms))
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(label)), ms);
+        })
       ]);
     }
 
-    togglePassword.addEventListener("click", () => {
-      const visible = password.type === "text";
-      password.type = visible ? "password" : "text";
-      togglePassword.textContent = visible ? "Show" : "Hide";
-    });
-
-    password.addEventListener("input", () => {
-      const value = password.value;
-      let score = 0;
-      if (value.length >= 6) score++;
-      if (value.length >= 10) score++;
-      if (/[A-Z]/.test(value) && /[a-z]/.test(value)) score++;
-      if (/\d/.test(value)) score++;
-      if (/[^A-Za-z0-9]/.test(value)) score++;
-      const widths = [0, 25, 45, 65, 82, 100];
-      strengthBar.style.width = `${widths[score]}%`;
-      strengthHint.textContent = !value ? "Use 6+ characters." : score < 2 ? "Weak password." : score < 4 ? "Good password." : "Strong password.";
+    passwordInput.addEventListener("input", () => {
+      const length = passwordInput.value.length;
+      passwordHint.textContent = length < 6
+        ? `${6 - length} more character${6 - length === 1 ? "" : "s"} needed.`
+        : "Password length looks good.";
+      passwordHint.className = length >= 6 ? "field-hint good" : "field-hint";
     });
 
     form.addEventListener("submit", async (event) => {
@@ -132,67 +101,104 @@
       message.hidden = true;
 
       const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const passwordValue = password.value;
-      const confirmValue = confirmPassword.value;
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = passwordInput.value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
 
-      if (!name) return showMessage("Please enter your full name.", true);
-      if (!email) return showMessage("Please enter your email address.", true);
-      if (passwordValue.length < 6) return showMessage("Password must be at least 6 characters.", true);
-      if (passwordValue !== confirmValue) return showMessage("Passwords do not match.", true);
+      if (!name) return showMessage("Please enter your full name.", "error");
+      if (password.length < 6) return showMessage("Password must be at least 6 characters.", "error");
+      if (password !== confirmPassword) return showMessage("Passwords do not match.", "error");
 
-      setLoading(true);
+      registerButton.disabled = true;
+      registerButton.classList.add("is-loading");
+      registerButton.innerHTML = '<span>Creating account</span><i class="spinner"></i>';
 
       try {
         const credential = await withTimeout(
-          createUserWithEmailAndPassword(auth, email, passwordValue),
+          createUserWithEmailAndPassword(auth, email, password),
           15000,
-          "Firebase took too long to respond. Check your internet connection and try again."
+          "Firebase sign-up timed out. Check your internet connection and Firebase configuration."
         );
-        const user = credential.user;
 
-        // These operations are separated so one failure is shown precisely.
-        await withTimeout(updateProfile(user, { displayName: name }), 10000, "Saving your profile timed out.");
+        const user = credential.user;
+        await updateProfile(user, { displayName: name });
+
+        let profileSaved = false;
+        let profileError = null;
 
         try {
-          await withTimeout(
-            setDoc(doc(db, "users", user.uid), {
-              name,
-              email: user.email,
-              role: "client",
-              createdAt: serverTimestamp()
+          const token = await getIdToken(user, true);
+          const response = await withTimeout(
+            fetch("/api/user-profile", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ name, email })
             }),
             12000,
-            "Saving your Firestore profile timed out."
+            "Profile server timed out."
           );
-        } catch (firestoreError) {
-          console.error("Firestore profile error:", firestoreError);
-          showMessage(`Account was created, but your profile could not be saved to Firestore. ${firestoreError.code || firestoreError.message || "Check Firestore Rules."}`, true);
-          return;
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "The server could not save your profile.");
+          }
+          profileSaved = true;
+        } catch (serverError) {
+          profileError = serverError;
+
+          // Fallback: save directly from the authenticated client.
+          try {
+            const { doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js");
+            const { db } = await import("./auth.js");
+            await withTimeout(
+              setDoc(doc(db, "users", user.uid), {
+                name,
+                email: user.email,
+                role: "client",
+                createdAt: serverTimestamp()
+              }, { merge: true }),
+              10000,
+              "Firestore profile save timed out."
+            );
+            profileSaved = true;
+          } catch (directError) {
+            profileError = directError;
+          }
         }
 
-        // Verification email is attempted after the account/profile are safely created.
-        try {
-          await withTimeout(sendEmailVerification(user), 15000, "Verification email request timed out.");
-          showMessage("Account created! We sent a verification link to your email. Check Inbox, Spam, or Promotions.");
-          form.reset();
-          strengthBar.style.width = "0%";
-          strengthHint.textContent = "Use 6+ characters.";
-        } catch (verificationError) {
-          console.error("Verification email error:", verificationError);
-          showMessage("Your account was created successfully, but the verification email could not be sent right now. Go to Login and use Resend verification email.", true);
+        // Verification is sent only after registration. A verified account will not be sent this again by login.
+        await withTimeout(sendEmailVerification(user), 15000, "Verification email request timed out.");
+
+        form.reset();
+        passwordHint.textContent = "Use at least 6 characters.";
+        passwordHint.className = "field-hint";
+
+        if (profileSaved) {
+          showMessage("Account created! We sent a verification link to your email. Verify it, then use Sign In.");
+        } else {
+          console.error("Profile save failed after both server and client attempts:", profileError);
+          showMessage("Account created and verification email sent, but your database profile could not be saved. Check Vercel FIREBASE_SERVICE_ACCOUNT and Firestore Rules.", "error");
         }
       } catch (error) {
         console.error("Registration error:", error);
-        const code = error.code || "";
-        let text = error.message || "Registration failed.";
-        if (code === "auth/email-already-in-use") text = "This email is already registered. Please use Sign in instead.";
-        else if (code === "auth/invalid-email") text = "Please enter a valid email address.";
-        else if (code === "auth/weak-password") text = "Password must be at least 6 characters.";
-        else if (code === "auth/network-request-failed") text = "Network error. Check your internet connection and try again.";
-        showMessage(text, true);
+
+        const errorMessage =
+          error.code === "auth/email-already-in-use"
+            ? "This email is already registered. Use Sign In instead."
+            : error.code === "auth/invalid-email"
+              ? "Please enter a valid email address."
+              : error.code === "auth/weak-password"
+                ? "Password must be at least 6 characters."
+                : error.message || "Registration failed. Please try again.";
+
+        showMessage(errorMessage, "error");
       } finally {
-        setLoading(false);
+        registerButton.disabled = false;
+        registerButton.classList.remove("is-loading");
+        registerButton.innerHTML = "<span>Create account</span><b>→</b>";
       }
     });
   </script>

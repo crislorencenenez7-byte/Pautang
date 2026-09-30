@@ -1,42 +1,91 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PautangMo</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071a11">
+  <title>PautangMo — Simple Loan Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header class="topbar">
-<a class="brand" href="index.html">₱ PautangMo</a>
-<nav class="main-nav" aria-label="Main navigation">
-<a href="index.html">Home</a><a href="apply.html">Apply Loan</a><a href="pay.html">Pay Loan</a><a href="login.html">Login</a><a href="register.html">Register</a><a href="admin-login.html">Admin</a>
-</nav></header>
-<main class="shell">
-<section class="hero">
-<div><p class="eyebrow">SIMPLE • MOBILE • ORGANIZED</p>
-<h1>Manage your loan <span>easily.</span></h1>
-<p>Apply for a loan or pay an existing loan from separate pages. Built to work comfortably on phones without Desktop Site.</p>
-<div class="action-row"><a class="primary-btn" href="apply.html">Apply Loan →</a><a class="secondary-btn" href="pay.html">Pay Loan →</a></div></div>
-<div class="hero-badge"><strong>20%</strong><span>interest</span><small>15-day due date</small></div>
-</section>
-<section class="feature-grid">
-<a class="feature-card" href="apply.html"><div class="feature-icon">₱</div><h2>Apply Loan</h2><p>Submit borrower information and choose GCash or Hands-On release.</p><b>Open →</b></a>
-<a class="feature-card" href="pay.html"><div class="feature-icon">✓</div><h2>Pay Loan</h2><p>Choose GCash or Hands-On payment and submit proof for verification.</p><b>Open →</b></a>
-</section>
-<footer>© <span id="year"></span> PautangMo</footer>
-</main><script>year.textContent=new Date().getFullYear()</script>
-<script>
-(function(){
-  const nav=document.querySelector(".main-nav");
-  if(!nav) return;
-  const bar=document.querySelector(".topbar");
-  const btn=document.createElement("button");
-  btn.className="mobile-nav-toggle";
-  btn.type="button";
-  btn.setAttribute("aria-label","Open navigation");
-  btn.textContent="☰";
-  bar.insertBefore(btn, nav);
-  btn.addEventListener("click",()=>{
-    nav.classList.toggle("open");
-    bar.classList.toggle("nav-open");
-    btn.textContent=nav.classList.contains("open")?"✕":"☰";
-  });
-})();
-</script>
-</body></html>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span>₱</span> PautangMo</a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="apply.html">Apply Loan</a>
+      <a href="pay.html">Pay Loan</a>
+      <a href="login.html">Sign In</a>
+      <a href="register.html">Create Account</a>
+      <a href="admin-login.html">Admin</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">SIMPLE • SECURE • MOBILE-FIRST</p>
+        <h1>Your money.<br><span>Your next move.</span></h1>
+        <p>Apply for a loan, keep track of your application, and manage repayments through a clean experience designed for your phone.</p>
+        <div class="action-row">
+          <a class="primary-btn" href="register.html">Create Account →</a>
+          <a class="secondary-btn" href="login.html">Sign In</a>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <strong>20%</strong>
+        <span>loan interest</span>
+        <small>15-day due date</small>
+      </div>
+    </section>
+
+    <section class="feature-grid">
+      <a class="feature-card" href="apply.html">
+        <div class="feature-icon">₱</div>
+        <h2>Apply Loan</h2>
+        <p>Submit your borrower information and choose your preferred release method.</p>
+        <b>Start an application →</b>
+      </a>
+      <a class="feature-card" href="pay.html">
+        <div class="feature-icon">✓</div>
+        <h2>Pay Loan</h2>
+        <p>Choose a payment method and submit the required payment information.</p>
+        <b>Open payment →</b>
+      </a>
+    </section>
+
+    <section class="feature-grid" style="margin-top:18px">
+      <article class="feature-card">
+        <div class="feature-icon">●</div>
+        <h2>One secure account</h2>
+        <p>Your new account starts as a client. Email verification helps protect account access.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">↗</div>
+        <h2>Built for mobile</h2>
+        <p>Fast forms, readable cards, and responsive navigation for phones and smaller screens.</p>
+      </article>
+    </section>
+
+    <footer>© <span id="year"></span> PautangMo · Simple loan management</footer>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const nav = document.querySelector(".main-nav");
+    const bar = document.querySelector(".topbar");
+    if (nav && bar) {
+      const btn = document.createElement("button");
+      btn.className = "mobile-nav-toggle";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Open navigation");
+      btn.textContent = "☰";
+      bar.insertBefore(btn, nav);
+      btn.addEventListener("click", () => {
+        nav.classList.toggle("open");
+        btn.textContent = nav.classList.contains("open") ? "✕" : "☰";
+      });
+    }
+  </script>
+</body>
+</html>
