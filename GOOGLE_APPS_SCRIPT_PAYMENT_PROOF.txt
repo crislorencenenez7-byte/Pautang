@@ -56,3 +56,9 @@ IMPORTANT: If your current doPost already parses e.postData.contents into a vari
 
 Privacy:
 The returned Google Drive URL is stored in Firestore. Make sure the proof folder/file sharing is appropriate for your admin. Do not make payment proofs public unless you intentionally accept that risk.
+
+
+SERVER-SIDE LOAN RECORDING
+The updated PautangMo Vercel API now sends the loan record to GOOGLE_SHEET_URL from the server.
+Your existing normal loan/Google Sheet doPost handling must continue to accept these fields: name, amount, reference, totalAmount, date, dueDate, status, releaseMethod, releaseGcashName, releaseGcashNumber, address.
+Do not remove the normal loan/Google Sheet handling when adding uploadPaymentProof.

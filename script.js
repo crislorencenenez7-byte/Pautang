@@ -1,4 +1,3 @@
-const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycbzUQKPJB2uf2gBNEAAzhlDfAj75BVp_U97RY-Y6yIxykEyCyg43EYkdVksfLyCPrVpB/exec";
 
 const amountInput=document.getElementById("amount"),
 totalPreview=document.getElementById("totalPreview");
@@ -309,35 +308,8 @@ if(loanForm){
         }
 
 
-        fetch(
-          GOOGLE_SHEET_URL,
-          {
-            method:"POST",
-            mode:"no-cors",
-
-            headers:{
-              "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-              name,
-              amount,
-              reference:j.reference,
-              totalAmount:j.totalAmount,
-              dueDate:j.dueDate,
-              status:j.status,
-              releaseMethod:method,
-              releaseGcashName:gcashName,
-              releaseGcashNumber:gcashNumber,
-              address
-            })
-          }
-        ).catch(()=>{});
-
-
         msg.textContent=
-          `Loan approved for recording. Reference: ${j.reference} • Total due: ${money(j.totalAmount)} • Due: ${j.dueDate}. Your borrowing access is now locked until the loan is Paid.`;
+          `Loan application submitted. Reference: ${j.reference} • Total due: ${money(j.totalAmount)} • Due: ${j.dueDate}. Your borrowing access is now locked until the loan is Paid.`;
 
         msg.className="message";
         msg.hidden=false;

@@ -1,0 +1,19 @@
+PAUTANGMO UPDATED ZIP
+
+Fixes in this version:
+1. Loan applications are recorded in Firestore as before.
+2. The server-side /api/apply endpoint now sends the same loan record to GOOGLE_SHEET_URL.
+3. The frontend no longer makes a second client-side Google Sheets request with no-cors.
+4. The API reports sheetRecorded and sheetError in its response for troubleshooting.
+5. New-loan email is sent to ADMIN_EMAIL.
+6. Loan confirmation email is sent to the borrower's verified Firebase account email.
+7. Google Drive payment-proof flow remains in /api/pay-application.js.
+8. Firebase Storage is not used for payment proof.
+
+IMPORTANT:
+- Set GOOGLE_SHEET_URL in Vercel to the deployed Apps Script /exec URL.
+- Your Apps Script must retain its existing normal loan/Google Sheet doPost logic AND the uploadPaymentProof branch.
+- The normal loan handler should accept: name, amount, reference, totalAmount, date, dueDate, status, releaseMethod, releaseGcashName, releaseGcashNumber, address.
+- Redeploy Vercel after changing environment variables.
+- Redeploy Apps Script after changing its code.
+- Do not put Firebase service-account JSON or Resend API keys into this ZIP or GitHub.
