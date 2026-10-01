@@ -46,6 +46,99 @@ async function sendAdminLoanEmail(application) {
   return { sent: true };
 }
 
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function recordLoanInGoogleSheet(application) {
+  const endpoint = process.env.GOOGLE_SHEET_URL;
+  if (!endpoint) {
+    return { recorded: false, skipped: true, error: "GOOGLE_SHEET_URL is not configured in Vercel." };
+  }
+
+  const payload = {
+    name: application.name,
+    amount: application.amount,
+    reference: application.reference,
+    totalAmount: application.totalAmount,
+    date: application.date,
+    dueDate: application.dueDate,
+    status: application.status,
+    releaseMethod: application.releaseMethod,
+    releaseGcashName: application.releaseGcashName,
+    releaseGcashNumber: application.releaseGcashNumber,
+    address: application.releaseHandsOnAddress
+  };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const text = await response.text().catch(() => "");
+  let data = {};
+  try { data = JSON.parse(text); } catch {}
+
+  if (!response.ok) {
+    throw new Error(`Google Sheets request failed (${response.status}).`);
+  }
+  if (data && data.success === false) {
+    throw new Error(data.error || "Google Sheets rejected the loan record.");
+  }
+
+  return { recorded: true, response: data };
+}
+
+async function sendBorrowerLoanEmail(application) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.MAIL_FROM;
+  const to = application.email;
+  if (!apiKey || !from || !to) return { sent: false, skipped: true };
+
+  const e = escapeHtml;
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#10221a">
+      <h2 style="color:#08713c">PautangMo Loan Application Received</h2>
+      <p>Your loan application has been successfully recorded.</p>
+      <table cellpadding="8" cellspacing="0" style="border-collapse:collapse">
+        <tr><td><b>Reference</b></td><td>${e(application.reference)}</td></tr>
+        <tr><td><b>Name</b></td><td>${e(application.name)}</td></tr>
+        <tr><td><b>Amount</b></td><td>₱${Number(application.amount).toLocaleString("en-PH", {minimumFractionDigits:2})}</td></tr>
+        <tr><td><b>Interest</b></td><td>20%</td></tr>
+        <tr><td><b>Total Amount</b></td><td>₱${Number(application.totalAmount).toLocaleString("en-PH", {minimumFractionDigits:2})}</td></tr>
+        <tr><td><b>Date</b></td><td>${e(application.date)}</td></tr>
+        <tr><td><b>Due Date</b></td><td>${e(application.dueDate)}</td></tr>
+        <tr><td><b>Status</b></td><td>${e(application.status)}</td></tr>
+      </table>
+      <p style="margin-top:20px">Keep your loan reference number for your records.</p>
+    </div>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject: `PautangMo Loan Application • ${application.reference}`,
+      html
+    })
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    console.error("Borrower loan email failed:", response.status, text);
+    return { sent: false };
+  }
+  return { sent: true };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
 
@@ -141,8 +234,18 @@ export default async function handler(req, res) {
       releaseHandsOnAddress: releaseMethod === "Hands-On" ? String(body.releaseHandsOnAddress || "").trim() : ""
     };
 
-    const emailResult = await sendAdminLoanEmail(result).catch(error => {
+    const sheetResult = await recordLoanInGoogleSheet(result).catch(error => {
+      console.error("Google Sheets recording exception:", error);
+      return { recorded: false, error: error?.message || "Google Sheets recording failed." };
+    });
+
+    const adminEmailResult = await sendAdminLoanEmail(result).catch(error => {
       console.error("Admin loan email exception:", error);
+      return { sent: false };
+    });
+
+    const borrowerEmailResult = await sendBorrowerLoanEmail(result).catch(error => {
+      console.error("Borrower loan email exception:", error);
       return { sent: false };
     });
 
@@ -150,7 +253,10 @@ export default async function handler(req, res) {
       success: true,
       id: application.id,
       ...result,
-      adminEmailSent: !!emailResult.sent
+      sheetRecorded: !!sheetResult.recorded,
+      sheetError: sheetResult.recorded ? "" : (sheetResult.error || "Google Sheets recording was not confirmed."),
+      adminEmailSent: !!adminEmailResult.sent,
+      borrowerEmailSent: !!borrowerEmailResult.sent
     });
   } catch (error) {
     console.error("Loan application error:", error);
