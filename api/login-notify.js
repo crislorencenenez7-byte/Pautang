@@ -1,6 +1,9 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, message: "Method not allowed." });
+    return res.status(405).json({
+      success: false,
+      message: "Method not allowed."
+    });
   }
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -25,20 +28,37 @@ export default async function handler(req, res) {
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
         from,
         to: [email],
         subject: "PautangMo login notification",
+
         html: `
           <div style="font-family:Arial,sans-serif;line-height:1.6">
             <h2>PautangMo Login</h2>
+
             <p>Hello ${escapeHtml(name || "Client")},</p>
-            <p>Your PautangMo account was successfully logged in.</p>
-            <p>If you did not perform this login, change your password and secure your account.</p>
+
+            <p>
+              Your PautangMo account was successfully logged in.
+            </p>
+
+            <p>
+              If you did not perform this login, change your password
+              and secure your account.
+            </p>
+
+            <hr>
+
+            <p style="font-size:12px;color:#666">
+              This is an automated security notification from PautangMo.
+            </p>
           </div>
         `
       })
@@ -48,9 +68,11 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error("Resend error:", data);
+
       return res.status(502).json({
         success: false,
-        message: "Email provider rejected the request."
+        message: "Email provider rejected the request.",
+        providerError: data
       });
     }
 
@@ -58,11 +80,14 @@ export default async function handler(req, res) {
       success: true,
       id: data.id || null
     });
+
   } catch (error) {
     console.error("Login notification error:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Unable to send login notification."
+      message: "Unable to send login notification.",
+      error: String(error.message || error)
     });
   }
 }
