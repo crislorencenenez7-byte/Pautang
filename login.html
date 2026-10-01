@@ -1,70 +1,190 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b1f16">
-  <title>Sign in | PautangMo</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b1f16"
+  >
+
+  <title>Create account | PautangMo</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body class="auth-page">
 
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
 
+
   <main class="auth-shell">
+
     <section class="auth-card auth-card-wide">
 
+
+      <!-- BRAND -->
+
       <div class="auth-brand-row">
-        <a class="brand brand-mark" href="index.html">
+
+        <a
+          class="brand brand-mark"
+          href="index.html"
+        >
           <span>₱</span> PautangMo
         </a>
 
-        <span class="secure-pill">● Secure</span>
+        <span class="secure-pill">
+          ● Secure
+        </span>
+
       </div>
 
-      <div class="auth-grid login-grid">
 
-        <!-- LEFT SIDE -->
-        <div class="auth-copy auth-copy-login">
+      <div class="auth-grid">
 
-          <p class="eyebrow">WELCOME BACK</p>
 
-          <h1>
-            Your account.<br>
-            <span>Your next step.</span>
-          </h1>
+        <!-- LEFT -->
 
-          <p class="auth-lead">
-            Sign in securely to continue to your PautangMo dashboard
-            and loan application.
+        <div class="auth-copy">
+
+          <p class="eyebrow">
+            CREATE YOUR ACCOUNT
           </p>
 
-          <div class="login-orbit" aria-hidden="true">
-            <div class="orbit-core">₱</div>
 
-            <span class="orbit-dot dot-a">✓</span>
-            <span class="orbit-dot dot-b">↗</span>
-            <span class="orbit-dot dot-c">•</span>
+          <h1>
+            Start your
+            <span>PautangMo</span>
+            journey.
+          </h1>
+
+
+          <p class="auth-lead">
+            Create one secure client account to manage
+            your loan application and payments in one place.
+          </p>
+
+
+          <div class="benefit-list">
+
+
+            <div class="benefit-item">
+
+              <span>✓</span>
+
+              <div>
+
+                <b>
+                  Client by default
+                </b>
+
+                <small>
+                  Every new account starts with the client role.
+                </small>
+
+              </div>
+
+            </div>
+
+
+            <div class="benefit-item">
+
+              <span>✦</span>
+
+              <div>
+
+                <b>
+                  Email verification
+                </b>
+
+                <small>
+                  Verify your email before signing in.
+                </small>
+
+              </div>
+
+            </div>
+
+
+            <div class="benefit-item">
+
+              <span>↗</span>
+
+              <div>
+
+                <b>
+                  Mobile-first
+                </b>
+
+                <small>
+                  Designed to work smoothly on your phone.
+                </small>
+
+              </div>
+
+            </div>
+
+
           </div>
 
         </div>
 
-        <!-- LOGIN FORM -->
+
+        <!-- FORM -->
+
         <div class="auth-form-panel">
 
+
           <div class="form-heading">
-            <h2>Sign in</h2>
+
+            <h2>
+              Create account
+            </h2>
 
             <p>
-              Use your verified email and password.
+              It only takes a minute.
             </p>
+
           </div>
 
-          <form id="loginForm" novalidate>
+
+          <form
+            id="registerForm"
+            novalidate
+          >
+
 
             <label>
+
+              Full Name
+
+              <input
+                id="name"
+                type="text"
+                autocomplete="name"
+                required
+                placeholder="Juan Dela Cruz"
+              >
+
+            </label>
+
+
+            <label>
+
               Email
 
               <input
@@ -74,28 +194,65 @@
                 required
                 placeholder="you@example.com"
               >
+
             </label>
 
+
             <label>
+
               Password
 
               <input
                 id="password"
                 type="password"
-                autocomplete="current-password"
+                autocomplete="new-password"
+                minlength="6"
                 required
-                placeholder="Your password"
+                placeholder="At least 6 characters"
               >
+
+              <span
+                id="passwordHint"
+                class="field-hint"
+              >
+                Use at least 6 characters.
+              </span>
+
             </label>
+
+
+            <label>
+
+              Confirm Password
+
+              <input
+                id="confirmPassword"
+                type="password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+                placeholder="Repeat your password"
+              >
+
+            </label>
+
 
             <button
               class="primary-btn auth-submit"
-              id="loginButton"
+              id="registerButton"
               type="submit"
             >
-              <span>Sign In</span>
-              <b>→</b>
+
+              <span>
+                Create account
+              </span>
+
+              <b>
+                →
+              </b>
+
             </button>
+
 
             <div
               id="message"
@@ -103,18 +260,25 @@
               hidden
             ></div>
 
+
           </form>
 
+
           <div class="auth-switch-card">
-            <span>New to PautangMo?</span>
+
+            <span>
+              Already have an account?
+            </span>
 
             <a
               class="secondary-auth-btn"
-              href="register.html"
+              href="login.html"
             >
-              Create account <b>→</b>
+              Sign In <b>→</b>
             </a>
+
           </div>
+
 
           <a
             class="back-link"
@@ -123,43 +287,58 @@
             ← Back to PautangMo
           </a>
 
+
         </div>
 
       </div>
 
     </section>
+
   </main>
 
+
+  <!-- Firebase configuration -->
+
   <script src="firebase-config.js"></script>
+
+
+  <!-- Firebase authentication -->
 
   <script type="module">
 
     import {
+
       auth,
-      signInWithEmailAndPassword,
-      signOut,
+
+      createUserWithEmailAndPassword,
+
+      sendEmailVerification,
+
+      updateProfile,
+
       getIdToken
+
     } from "./auth.js";
 
 
-    const form = document.getElementById("loginForm");
+    const form =
+      document.getElementById("registerForm");
 
-    const emailInput =
-      document.getElementById("email");
-
-    const passwordInput =
-      document.getElementById("password");
 
     const message =
       document.getElementById("message");
 
-    const loginButton =
-      document.getElementById("loginButton");
+
+    const registerButton =
+      document.getElementById("registerButton");
 
 
-    const next =
-      new URLSearchParams(location.search)
-        .get("next") || "apply.html";
+    const passwordInput =
+      document.getElementById("password");
+
+
+    const passwordHint =
+      document.getElementById("passwordHint");
 
 
     function showMessage(
@@ -173,6 +352,7 @@
         `message ${type}`;
 
       message.hidden = false;
+
     }
 
 
@@ -203,6 +383,49 @@
     }
 
 
+    /*
+     * Password strength indicator
+     */
+
+    passwordInput.addEventListener(
+      "input",
+      () => {
+
+        const length =
+          passwordInput.value.length;
+
+
+        if (length < 6) {
+
+          const remaining =
+            6 - length;
+
+          passwordHint.textContent =
+            `${remaining} more character${
+              remaining === 1 ? "" : "s"
+            } needed.`;
+
+          passwordHint.className =
+            "field-hint";
+
+        } else {
+
+          passwordHint.textContent =
+            "Password length looks good.";
+
+          passwordHint.className =
+            "field-hint good";
+
+        }
+
+      }
+    );
+
+
+    /*
+     * Registration
+     */
+
     form.addEventListener(
       "submit",
       async (event) => {
@@ -211,35 +434,117 @@
 
         message.hidden = true;
 
-        loginButton.disabled = true;
 
-        loginButton.classList.add(
+        const name =
+          document
+            .getElementById("name")
+            .value
+            .trim();
+
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+        const password =
+          passwordInput.value;
+
+
+        const confirmPassword =
+          document
+            .getElementById("confirmPassword")
+            .value;
+
+
+        /*
+         * Validation
+         */
+
+        if (!name) {
+
+          showMessage(
+            "Please enter your full name.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (!email) {
+
+          showMessage(
+            "Please enter your email address.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (password.length < 6) {
+
+          showMessage(
+            "Password must be at least 6 characters.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+          showMessage(
+            "Passwords do not match.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * Loading state
+         */
+
+        registerButton.disabled = true;
+
+        registerButton.classList.add(
           "is-loading"
         );
 
-        loginButton.innerHTML =
-          '<span>Signing in</span><i class="spinner"></i>';
+        registerButton.innerHTML =
+          '<span>Creating account</span><i class="spinner"></i>';
 
 
         try {
 
+
           /*
-           * FIREBASE LOGIN
+           * CREATE FIREBASE ACCOUNT
            */
+
           const credential =
             await withTimeout(
 
-              signInWithEmailAndPassword(
+              createUserWithEmailAndPassword(
                 auth,
-                emailInput.value
-                  .trim()
-                  .toLowerCase(),
-                passwordInput.value
+                email,
+                password
               ),
 
               15000,
 
-              "Sign-in timed out. Check your internet connection and Firebase configuration."
+              "Firebase sign-up timed out. Check your internet connection and Firebase configuration."
 
             );
 
@@ -249,30 +554,27 @@
 
 
           /*
-           * EMAIL VERIFICATION CHECK
+           * SAVE DISPLAY NAME
            */
-          if (!user.emailVerified) {
 
-            await signOut(auth);
-
-            showMessage(
-
-              "Please verify the link sent to your email first, then come back and Sign In.",
-
-              "error"
-
-            );
-
-            return;
-          }
+          await updateProfile(
+            user,
+            {
+              displayName: name
+            }
+          );
 
 
           /*
-           * SYNC USER PROFILE
+           * SAVE PROFILE TO FIRESTORE
            *
-           * This is optional.
-           * If the API fails, login will still continue.
+           * This is separate from Firebase Auth.
+           * If it fails, authentication still exists.
            */
+
+          let profileSaved = false;
+
+
           try {
 
             const token =
@@ -287,43 +589,65 @@
 
 
             const timer =
-              setTimeout(() => {
-
-                controller.abort();
-
-              }, 7000);
+              setTimeout(
+                () => controller.abort(),
+                12000
+              );
 
 
             try {
 
-              await fetch(
-                "/api/user-profile",
-                {
-                  method: "POST",
+              const response =
+                await fetch(
+                  "/api/user-profile",
+                  {
+                    method: "POST",
 
-                  headers: {
-                    "Content-Type":
-                      "application/json",
+                    headers: {
 
-                    "Authorization":
-                      `Bearer ${token}`
-                  },
+                      "Content-Type":
+                        "application/json",
 
-                  body: JSON.stringify({
+                      "Authorization":
+                        `Bearer ${token}`
 
-                    name:
-                      user.displayName ||
-                      "PautangMo Client",
+                    },
 
-                    email:
-                      user.email
+                    body: JSON.stringify({
 
-                  }),
+                      name,
+                      email
 
-                  signal:
-                    controller.signal
-                }
-              );
+                    }),
+
+                    signal:
+                      controller.signal
+
+                  }
+                );
+
+
+              const result =
+                await response
+                  .json()
+                  .catch(() => ({}));
+
+
+              if (
+                !response.ok ||
+                !result.success
+              ) {
+
+                throw new Error(
+                  result.message ||
+                  "The server could not save your profile."
+                );
+
+              }
+
+
+              profileSaved = true;
+
 
             } finally {
 
@@ -331,59 +655,129 @@
 
             }
 
-          } catch (profileError) {
 
-            console.warn(
-              "Profile sync skipped:",
-              profileError
+          } catch (serverError) {
+
+            console.error(
+              "Profile save failed:",
+              serverError
             );
 
           }
 
 
           /*
-           * LOGIN SUCCESS
+           * FIREBASE VERIFICATION EMAIL
            *
-           * Resend/login notification
-           * has intentionally been removed.
+           * THIS IS THE IMPORTANT PART.
            *
-           * No /api/login-notify request.
+           * No Resend.
            */
-          location.href = next;
+
+          await withTimeout(
+
+            sendEmailVerification(user),
+
+            15000,
+
+            "Verification email request timed out."
+
+          );
+
+
+          /*
+           * Clear form
+           */
+
+          form.reset();
+
+          passwordHint.textContent =
+            "Use at least 6 characters.";
+
+          passwordHint.className =
+            "field-hint";
+
+
+          /*
+           * Success message
+           */
+
+          if (profileSaved) {
+
+            showMessage(
+              "Account created! Firebase sent a verification link to your email. Verify it, then use Sign In."
+            );
+
+          } else {
+
+            showMessage(
+              "Account created and Firebase sent the verification email. However, your profile could not be saved on the server. You can still verify your email.",
+              "error"
+            );
+
+          }
 
 
         } catch (error) {
 
           console.error(
-            "Login error:",
+            "Registration error:",
             error
           );
 
 
-          const errorMessage =
+          let errorMessage;
 
-            error.code ===
-            "auth/invalid-credential"
 
-              ? "Incorrect email or password."
+          switch (error.code) {
 
-            : error.code ===
-              "auth/user-not-found"
+            case "auth/email-already-in-use":
 
-              ? "No account was found for this email."
+              errorMessage =
+                "This email is already registered. Use Sign In instead.";
 
-            : error.code ===
-              "auth/wrong-password"
+              break;
 
-              ? "Incorrect password."
 
-            : error.code ===
-              "auth/too-many-requests"
+            case "auth/invalid-email":
 
-              ? "Too many attempts. Please wait and try again."
+              errorMessage =
+                "Please enter a valid email address.";
 
-            : error.message ||
-              "Unable to sign in.";
+              break;
+
+
+            case "auth/weak-password":
+
+              errorMessage =
+                "Password must be at least 6 characters.";
+
+              break;
+
+
+            case "auth/operation-not-allowed":
+
+              errorMessage =
+                "Email/password authentication is not enabled in Firebase.";
+
+              break;
+
+
+            case "auth/network-request-failed":
+
+              errorMessage =
+                "Network error. Check your internet connection and try again.";
+
+              break;
+
+
+            default:
+
+              errorMessage =
+                error.message ||
+                "Registration failed. Please try again.";
+
+          }
 
 
           showMessage(
@@ -394,15 +788,15 @@
 
         } finally {
 
-          loginButton.disabled =
+          registerButton.disabled =
             false;
 
-          loginButton.classList.remove(
+          registerButton.classList.remove(
             "is-loading"
           );
 
-          loginButton.innerHTML =
-            "<span>Sign In</span><b>→</b>";
+          registerButton.innerHTML =
+            "<span>Create account</span><b>→</b>";
 
         }
 
@@ -411,7 +805,9 @@
 
   </script>
 
+
   <script src="ui.js"></script>
 
 </body>
+
 </html>
