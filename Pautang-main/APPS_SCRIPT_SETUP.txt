@@ -1,0 +1,12 @@
+PAUTANGMO APPS SCRIPT SETUP
+
+Use the separate PAUTANGMO_APPS_SCRIPT_PLAIN_TEXT.txt file supplied outside the ZIP.
+
+1. Paste the complete Apps Script into Google Apps Script.
+2. Set SPREADSHEET_ID if the script is standalone.
+3. Run authorizeDriveWrite() once.
+4. Deploy as Web app: Execute as Me, Who has access: Anyone.
+5. Put the deployment /exec URL in Vercel as GOOGLE_SHEET_URL.
+6. After changing Apps Script code, create a NEW deployment version.
+
+The admin payment API now accepts both `error` and `message` response fields from Apps Script.
