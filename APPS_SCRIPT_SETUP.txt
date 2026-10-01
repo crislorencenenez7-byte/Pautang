@@ -1,0 +1,1 @@
+Use the separate PautangMo Apps Script plain-text file supplied with this ZIP release. Do not put the Apps Script source inside the website project if you prefer to manage it directly in script.google.com.

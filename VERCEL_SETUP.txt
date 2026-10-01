@@ -5,6 +5,7 @@ Required environment variables:
 - RESEND_API_KEY = your Resend API key
 - MAIL_FROM = verified sender address allowed by Resend
 - ADMIN_EMAIL = email address that should receive new loan application notifications and may access admin by email
+- FIREBASE_STORAGE_BUCKET = optional; defaults to pautangmo-f6fe0.firebasestorage.app
 
 Never put the service-account private key or Resend API key in firebase-config.js or GitHub.
 
@@ -12,17 +13,10 @@ WORKFLOW
 1. Register -> Firebase Authentication -> email verification -> users/{uid}.
 2. Apply Loan -> loanApplications/{loanId} and users/{uid}.loanActive=true / borrowingEnabled=false.
 3. The borrower cannot submit another loan while an Unpaid loan exists.
-4. Admin receives a Resend email containing the loanApplications data. No payment email is sent.
-5. Pay Loan -> payApplications/{payId}. GCash proof is stored in Google Drive through Apps Script; Hands-On has no screenshot requirement.
+4. A successful loan sends Resend confirmation emails to both the borrower and ADMIN_EMAIL. The same Firestore document ID is the reference number used in Firestore, Google Sheets, and the payment proof filename.
+5. Pay Loan -> payApplications/{payId}. GCash proof is uploaded to Google Drive; Hands-On has no screenshot requirement.
 6. Admin Dashboard reads both collections. Admin can verify/reject pending payments.
 7. Verify & Mark Paid -> loanApplications.status=Paid and borrower borrowingEnabled=true.
-8. Apply Loan also records the loan in Google Sheets through the server-side Vercel -> Apps Script request.
-9. Resend sends the new-loan notification to ADMIN_EMAIL and a confirmation to the borrower email.
+8. Google Sheets remains a reporting copy of loan applications.
 
-Firebase Storage is NOT required in this version. GCash payment proof is sent to the existing Google Apps Script web app, saved in Google Drive, and only the Drive URL is stored in payApplications. See GOOGLE_APPS_SCRIPT_PAYMENT_PROOF.txt.
-
-
-Payment proof setup:
-- GOOGLE_SHEET_URL = your deployed Google Apps Script /exec URL.
-- Configure PAYMENT_PROOF_FOLDER_ID in Apps Script.
-- Redeploy the Apps Script after adding the payment-proof branch.
+Firebase Storage is NOT required. The Google Apps Script web app handles Google Sheets and Google Drive payment proofs. Configure the Apps Script separately using the plain-text script supplied with this release.

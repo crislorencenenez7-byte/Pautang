@@ -403,11 +403,7 @@ export default async function handler(
       }
 
 
-      proofFileName=
-        clean(
-          body.proofFileName
-        )||
-        "payment-proof.jpg";
+      proofFileName = `${loanDoc.id}.jpg`;
 
 
       const uploaded=

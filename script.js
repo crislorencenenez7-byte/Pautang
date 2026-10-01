@@ -1,4 +1,3 @@
-
 const amountInput=document.getElementById("amount"),
 totalPreview=document.getElementById("totalPreview");
 
@@ -309,7 +308,7 @@ if(loanForm){
 
 
         msg.textContent=
-          `Loan application submitted. Reference: ${j.reference} • Total due: ${money(j.totalAmount)} • Due: ${j.dueDate}. Your borrowing access is now locked until the loan is Paid.`;
+          `Loan approved for recording. Reference: ${j.reference} • Total due: ${money(j.totalAmount)} • Due: ${j.dueDate}. Your borrowing access is now locked until the loan is Paid.`;
 
         msg.className="message";
         msg.hidden=false;
