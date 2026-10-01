@@ -1,421 +1,491 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta charset="utf-8">
+  <title>Sign In - PautangMo</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
+  <link rel="stylesheet" href="style.css">
 
-  <meta
-    name="theme-color"
-    content="#0b1f16"
-  >
+  <style>
+    .auth-container {
+      max-width: 450px;
+      margin: 40px auto;
+      padding: 25px;
+    }
 
-  <title>Create account | PautangMo</title>
+    .auth-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+    .auth-card h1 {
+      margin-bottom: 8px;
+    }
 
+    .auth-card > p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #2563eb;
+    }
+
+    .signin-btn,
+    .resend-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .signin-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    .resend-btn {
+      margin-top: 10px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .signin-btn:disabled,
+    .resend-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .forgot {
+      display: block;
+      margin: 12px 0;
+      text-align: right;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.success {
+      display: block;
+      background: #e8f7ee;
+      color: #166534;
+    }
+
+    .message.error {
+      display: block;
+      background: #feecec;
+      color: #991b1b;
+    }
+
+    .debug-box {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      background: #111827;
+      color: #f9fafb;
+      border-radius: 10px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .register-link a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
 </head>
 
+<body>
 
-<body class="auth-page">
+  <div class="auth-container">
 
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
+    <div class="auth-card">
 
+      <h1>Sign In</h1>
 
-  <main class="auth-shell">
+      <p>
+        Sign in to your PautangMo account.
+      </p>
 
-    <section class="auth-card auth-card-wide">
+      <form id="loginForm">
 
+        <div class="form-group">
+          <label for="email">Email Address</label>
 
-      <!-- BRAND -->
+          <input
+            type="email"
+            id="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          >
+        </div>
 
-      <div class="auth-brand-row">
+        <div class="form-group">
+          <label for="password">Password</label>
 
-        <a
-          class="brand brand-mark"
-          href="index.html"
-        >
-          <span>₱</span> PautangMo
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <a href="#" id="forgotPassword" class="forgot">
+          Forgot Password?
         </a>
 
-        <span class="secure-pill">
-          ● Secure
-        </span>
+        <button
+          type="submit"
+          id="loginBtn"
+          class="signin-btn"
+        >
+          Sign In
+        </button>
 
+      </form>
+
+      <button
+        type="button"
+        id="resendBtn"
+        class="resend-btn"
+        style="display:none;"
+      >
+        Resend Verification Email
+      </button>
+
+      <div id="message" class="message"></div>
+
+      <div id="debugBox" class="debug-box"></div>
+
+      <div class="register-link">
+        Don't have an account?
+        <a href="register.html">Create Account</a>
       </div>
 
+    </div>
 
-      <div class="auth-grid">
+  </div>
 
-
-        <!-- LEFT -->
-
-        <div class="auth-copy">
-
-          <p class="eyebrow">
-            CREATE YOUR ACCOUNT
-          </p>
-
-
-          <h1>
-            Start your
-            <span>PautangMo</span>
-            journey.
-          </h1>
-
-
-          <p class="auth-lead">
-            Create one secure client account to manage
-            your loan application and payments in one place.
-          </p>
-
-
-          <div class="benefit-list">
-
-
-            <div class="benefit-item">
-
-              <span>✓</span>
-
-              <div>
-
-                <b>
-                  Client by default
-                </b>
-
-                <small>
-                  Every new account starts with the client role.
-                </small>
-
-              </div>
-
-            </div>
-
-
-            <div class="benefit-item">
-
-              <span>✦</span>
-
-              <div>
-
-                <b>
-                  Email verification
-                </b>
-
-                <small>
-                  Verify your email before signing in.
-                </small>
-
-              </div>
-
-            </div>
-
-
-            <div class="benefit-item">
-
-              <span>↗</span>
-
-              <div>
-
-                <b>
-                  Mobile-first
-                </b>
-
-                <small>
-                  Designed to work smoothly on your phone.
-                </small>
-
-              </div>
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-        <!-- FORM -->
-
-        <div class="auth-form-panel">
-
-
-          <div class="form-heading">
-
-            <h2>
-              Create account
-            </h2>
-
-            <p>
-              It only takes a minute.
-            </p>
-
-          </div>
-
-
-          <form
-            id="registerForm"
-            novalidate
-          >
-
-
-            <label>
-
-              Full Name
-
-              <input
-                id="name"
-                type="text"
-                autocomplete="name"
-                required
-                placeholder="Juan Dela Cruz"
-              >
-
-            </label>
-
-
-            <label>
-
-              Email
-
-              <input
-                id="email"
-                type="email"
-                autocomplete="email"
-                required
-                placeholder="you@example.com"
-              >
-
-            </label>
-
-
-            <label>
-
-              Password
-
-              <input
-                id="password"
-                type="password"
-                autocomplete="new-password"
-                minlength="6"
-                required
-                placeholder="At least 6 characters"
-              >
-
-              <span
-                id="passwordHint"
-                class="field-hint"
-              >
-                Use at least 6 characters.
-              </span>
-
-            </label>
-
-
-            <label>
-
-              Confirm Password
-
-              <input
-                id="confirmPassword"
-                type="password"
-                autocomplete="new-password"
-                minlength="6"
-                required
-                placeholder="Repeat your password"
-              >
-
-            </label>
-
-
-            <button
-              class="primary-btn auth-submit"
-              id="registerButton"
-              type="submit"
-            >
-
-              <span>
-                Create account
-              </span>
-
-              <b>
-                →
-              </b>
-
-            </button>
-
-
-            <div
-              id="message"
-              class="message"
-              hidden
-            ></div>
-
-
-          </form>
-
-
-          <div class="auth-switch-card">
-
-            <span>
-              Already have an account?
-            </span>
-
-            <a
-              class="secondary-auth-btn"
-              href="login.html"
-            >
-              Sign In <b>→</b>
-            </a>
-
-          </div>
-
-
-          <a
-            class="back-link"
-            href="index.html"
-          >
-            ← Back to PautangMo
-          </a>
-
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- Firebase configuration -->
-
-  <script src="firebase-config.js"></script>
-
-
-  <!-- Firebase authentication -->
 
   <script type="module">
 
     import {
-
-      auth,
-
-      createUserWithEmailAndPassword,
-
+      signInWithEmailAndPassword,
       sendEmailVerification,
-
-      updateProfile,
-
-      getIdToken
-
+      sendPasswordResetEmail,
+      signOut
     } from "./auth.js";
 
 
-    const form =
-      document.getElementById("registerForm");
+    const loginForm =
+      document.getElementById("loginForm");
 
+    const loginBtn =
+      document.getElementById("loginBtn");
+
+    const resendBtn =
+      document.getElementById("resendBtn");
+
+    const forgotPassword =
+      document.getElementById("forgotPassword");
 
     const message =
       document.getElementById("message");
 
-
-    const registerButton =
-      document.getElementById("registerButton");
-
-
-    const passwordInput =
-      document.getElementById("password");
+    const debugBox =
+      document.getElementById("debugBox");
 
 
-    const passwordHint =
-      document.getElementById("passwordHint");
+    let currentUser = null;
 
 
-    function showMessage(
-      text,
-      type = "success"
-    ) {
+    function showMessage(text, type) {
 
       message.textContent = text;
 
       message.className =
-        `message ${type}`;
+        "message " + type;
+    }
 
-      message.hidden = false;
 
+    function showDebug(text) {
+
+      debugBox.textContent = text;
+
+      debugBox.style.display = "block";
+    }
+
+
+    function hideDebug() {
+
+      debugBox.textContent = "";
+
+      debugBox.style.display = "none";
     }
 
 
     function withTimeout(
       promise,
-      ms,
-      label
+      milliseconds,
+      timeoutMessage
     ) {
 
+      const timeout = new Promise((_, reject) => {
+
+        setTimeout(() => {
+
+          reject(
+            new Error(timeoutMessage)
+          );
+
+        }, milliseconds);
+
+      });
+
       return Promise.race([
-
         promise,
-
-        new Promise((_, reject) => {
-
-          setTimeout(() => {
-
-            reject(
-              new Error(label)
-            );
-
-          }, ms);
-
-        })
-
+        timeout
       ]);
-
     }
 
 
     /*
-     * Password strength indicator
+     * SIGN IN
      */
 
-    passwordInput.addEventListener(
-      "input",
-      () => {
+    loginForm.addEventListener(
+      "submit",
+      async (event) => {
 
-        const length =
-          passwordInput.value.length;
+        event.preventDefault();
+
+        hideDebug();
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
 
 
-        if (length < 6) {
+        loginBtn.disabled = true;
 
-          const remaining =
-            6 - length;
+        loginBtn.textContent =
+          "Signing In...";
 
-          passwordHint.textContent =
-            `${remaining} more character${
-              remaining === 1 ? "" : "s"
-            } needed.`;
 
-          passwordHint.className =
-            "field-hint";
+        resendBtn.style.display =
+          "none";
 
-        } else {
 
-          passwordHint.textContent =
-            "Password length looks good.";
+        try {
 
-          passwordHint.className =
-            "field-hint good";
+          const credential =
+            await signInWithEmailAndPassword(
+              email,
+              password
+            );
 
+
+          currentUser =
+            credential.user;
+
+
+          /*
+           * CHECK EMAIL VERIFICATION
+           */
+
+          if (!currentUser.emailVerified) {
+
+            showMessage(
+              "Your email address is not verified yet.\n\n" +
+              "Please check your Inbox or Spam/Junk folder.",
+              "error"
+            );
+
+
+            resendBtn.style.display =
+              "block";
+
+
+            loginBtn.disabled =
+              false;
+
+            loginBtn.textContent =
+              "Sign In";
+
+
+            return;
+          }
+
+
+          /*
+           * VERIFIED
+           */
+
+          showMessage(
+            "Login successful. Redirecting...",
+            "success"
+          );
+
+
+          /*
+           * Go to homepage.
+           */
+
+          setTimeout(() => {
+
+            window.location.href =
+              "index.html";
+
+          }, 500);
+
+
+        } catch (error) {
+
+          console.error(
+            "LOGIN ERROR:",
+            error
+          );
+
+
+          const errorCode =
+            error?.code ||
+            "unknown";
+
+          const errorMessage =
+            error?.message ||
+            error?.toString() ||
+            "Unknown Firebase error";
+
+
+          let friendlyMessage =
+            "Unable to sign in.";
+
+
+          if (
+            errorCode ===
+            "auth/invalid-credential"
+          ) {
+
+            friendlyMessage =
+              "Incorrect email or password.";
+
+          } else if (
+            errorCode ===
+            "auth/invalid-email"
+          ) {
+
+            friendlyMessage =
+              "Please enter a valid email address.";
+
+          } else if (
+            errorCode ===
+            "auth/user-not-found"
+          ) {
+
+            friendlyMessage =
+              "No account was found with this email.";
+
+          } else if (
+            errorCode ===
+            "auth/wrong-password"
+          ) {
+
+            friendlyMessage =
+              "Incorrect password.";
+
+          } else if (
+            errorCode ===
+            "auth/too-many-requests"
+          ) {
+
+            friendlyMessage =
+              "Too many attempts. Please try again later.";
+
+          } else if (
+            errorCode ===
+            "auth/network-request-failed"
+          ) {
+
+            friendlyMessage =
+              "Network error. Check your internet connection.";
+
+          }
+
+
+          showMessage(
+            friendlyMessage,
+            "error"
+          );
+
+
+          showDebug(
+            "FIREBASE LOGIN ERROR\n\n" +
+            "Code:\n" +
+            errorCode +
+            "\n\n" +
+            "Message:\n" +
+            errorMessage
+          );
+
+
+          loginBtn.disabled =
+            false;
+
+          loginBtn.textContent =
+            "Sign In";
         }
 
       }
@@ -423,380 +493,179 @@
 
 
     /*
-     * Registration
+     * RESEND VERIFICATION
      */
 
-    form.addEventListener(
-      "submit",
+    resendBtn.addEventListener(
+      "click",
+      async () => {
+
+        if (!currentUser) {
+
+          showMessage(
+            "Please sign in first.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        resendBtn.disabled =
+          true;
+
+        resendBtn.textContent =
+          "Sending...";
+
+        hideDebug();
+
+
+        try {
+
+          await withTimeout(
+            sendEmailVerification(
+              currentUser
+            ),
+            15000,
+            "Firebase verification email request timed out."
+          );
+
+
+          showMessage(
+            "Verification email sent successfully.\n\n" +
+            "Check your Inbox and Spam/Junk folder.",
+            "success"
+          );
+
+
+          resendBtn.textContent =
+            "Verification Email Sent";
+
+
+        } catch (error) {
+
+          console.error(
+            "VERIFICATION RESEND ERROR:",
+            error
+          );
+
+
+          const errorCode =
+            error?.code ||
+            "unknown";
+
+          const errorMessage =
+            error?.message ||
+            error?.toString() ||
+            "Unknown Firebase error";
+
+
+          showMessage(
+            "Firebase could not send the verification email.",
+            "error"
+          );
+
+
+          showDebug(
+            "FIREBASE VERIFICATION ERROR\n\n" +
+            "Code:\n" +
+            errorCode +
+            "\n\n" +
+            "Message:\n" +
+            errorMessage
+          );
+
+
+          resendBtn.disabled =
+            false;
+
+          resendBtn.textContent =
+            "Resend Verification Email";
+        }
+
+      }
+    );
+
+
+    /*
+     * FORGOT PASSWORD
+     */
+
+    forgotPassword.addEventListener(
+      "click",
       async (event) => {
 
         event.preventDefault();
 
-        message.hidden = true;
-
-
-        const name =
-          document
-            .getElementById("name")
-            .value
-            .trim();
+        hideDebug();
 
 
         const email =
           document
             .getElementById("email")
             .value
-            .trim()
-            .toLowerCase();
-
-
-        const password =
-          passwordInput.value;
-
-
-        const confirmPassword =
-          document
-            .getElementById("confirmPassword")
-            .value;
-
-
-        /*
-         * Validation
-         */
-
-        if (!name) {
-
-          showMessage(
-            "Please enter your full name.",
-            "error"
-          );
-
-          return;
-
-        }
+            .trim();
 
 
         if (!email) {
 
           showMessage(
-            "Please enter your email address.",
+            "Enter your email address first.",
             "error"
           );
 
           return;
-
         }
-
-
-        if (password.length < 6) {
-
-          showMessage(
-            "Password must be at least 6 characters.",
-            "error"
-          );
-
-          return;
-
-        }
-
-
-        if (password !== confirmPassword) {
-
-          showMessage(
-            "Passwords do not match.",
-            "error"
-          );
-
-          return;
-
-        }
-
-
-        /*
-         * Loading state
-         */
-
-        registerButton.disabled = true;
-
-        registerButton.classList.add(
-          "is-loading"
-        );
-
-        registerButton.innerHTML =
-          '<span>Creating account</span><i class="spinner"></i>';
 
 
         try {
 
-
-          /*
-           * CREATE FIREBASE ACCOUNT
-           */
-
-          const credential =
-            await withTimeout(
-
-              createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-              ),
-
-              15000,
-
-              "Firebase sign-up timed out. Check your internet connection and Firebase configuration."
-
-            );
-
-
-          const user =
-            credential.user;
-
-
-          /*
-           * SAVE DISPLAY NAME
-           */
-
-          await updateProfile(
-            user,
-            {
-              displayName: name
-            }
-          );
-
-
-          /*
-           * SAVE PROFILE TO FIRESTORE
-           *
-           * This is separate from Firebase Auth.
-           * If it fails, authentication still exists.
-           */
-
-          let profileSaved = false;
-
-
-          try {
-
-            const token =
-              await getIdToken(
-                user,
-                true
-              );
-
-
-            const controller =
-              new AbortController();
-
-
-            const timer =
-              setTimeout(
-                () => controller.abort(),
-                12000
-              );
-
-
-            try {
-
-              const response =
-                await fetch(
-                  "/api/user-profile",
-                  {
-                    method: "POST",
-
-                    headers: {
-
-                      "Content-Type":
-                        "application/json",
-
-                      "Authorization":
-                        `Bearer ${token}`
-
-                    },
-
-                    body: JSON.stringify({
-
-                      name,
-                      email
-
-                    }),
-
-                    signal:
-                      controller.signal
-
-                  }
-                );
-
-
-              const result =
-                await response
-                  .json()
-                  .catch(() => ({}));
-
-
-              if (
-                !response.ok ||
-                !result.success
-              ) {
-
-                throw new Error(
-                  result.message ||
-                  "The server could not save your profile."
-                );
-
-              }
-
-
-              profileSaved = true;
-
-
-            } finally {
-
-              clearTimeout(timer);
-
-            }
-
-
-          } catch (serverError) {
-
-            console.error(
-              "Profile save failed:",
-              serverError
-            );
-
-          }
-
-
-          /*
-           * FIREBASE VERIFICATION EMAIL
-           *
-           * THIS IS THE IMPORTANT PART.
-           *
-           * No Resend.
-           */
-
           await withTimeout(
-
-            sendEmailVerification(user),
-
+            sendPasswordResetEmail(email),
             15000,
-
-            "Verification email request timed out."
-
+            "Password reset request timed out."
           );
 
 
-          /*
-           * Clear form
-           */
-
-          form.reset();
-
-          passwordHint.textContent =
-            "Use at least 6 characters.";
-
-          passwordHint.className =
-            "field-hint";
-
-
-          /*
-           * Success message
-           */
-
-          if (profileSaved) {
-
-            showMessage(
-              "Account created! Firebase sent a verification link to your email. Verify it, then use Sign In."
-            );
-
-          } else {
-
-            showMessage(
-              "Account created and Firebase sent the verification email. However, your profile could not be saved on the server. You can still verify your email.",
-              "error"
-            );
-
-          }
+          showMessage(
+            "Password reset email sent.\n\n" +
+            "Check your Inbox and Spam/Junk folder.",
+            "success"
+          );
 
 
         } catch (error) {
 
           console.error(
-            "Registration error:",
+            "PASSWORD RESET ERROR:",
             error
           );
 
 
-          let errorMessage;
+          const errorCode =
+            error?.code ||
+            "unknown";
 
-
-          switch (error.code) {
-
-            case "auth/email-already-in-use":
-
-              errorMessage =
-                "This email is already registered. Use Sign In instead.";
-
-              break;
-
-
-            case "auth/invalid-email":
-
-              errorMessage =
-                "Please enter a valid email address.";
-
-              break;
-
-
-            case "auth/weak-password":
-
-              errorMessage =
-                "Password must be at least 6 characters.";
-
-              break;
-
-
-            case "auth/operation-not-allowed":
-
-              errorMessage =
-                "Email/password authentication is not enabled in Firebase.";
-
-              break;
-
-
-            case "auth/network-request-failed":
-
-              errorMessage =
-                "Network error. Check your internet connection and try again.";
-
-              break;
-
-
-            default:
-
-              errorMessage =
-                error.message ||
-                "Registration failed. Please try again.";
-
-          }
+          const errorMessage =
+            error?.message ||
+            error?.toString() ||
+            "Unknown Firebase error";
 
 
           showMessage(
-            errorMessage,
+            "Unable to send password reset email.",
             "error"
           );
 
 
-        } finally {
-
-          registerButton.disabled =
-            false;
-
-          registerButton.classList.remove(
-            "is-loading"
+          showDebug(
+            "FIREBASE PASSWORD RESET ERROR\n\n" +
+            "Code:\n" +
+            errorCode +
+            "\n\n" +
+            "Message:\n" +
+            errorMessage
           );
-
-          registerButton.innerHTML =
-            "<span>Create account</span><b>→</b>";
 
         }
 
@@ -805,9 +674,5 @@
 
   </script>
 
-
-  <script src="ui.js"></script>
-
 </body>
-
 </html>
